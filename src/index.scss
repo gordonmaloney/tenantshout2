@@ -1,0 +1,118 @@
+@import './variables';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@font-face {
+    font-family: 'Bebas Neue';
+    src: local('Bebas Neue'), url('./fonts/Bebas\ Neue.ttf') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+
+$font: var(--font);
+$header-color: var(--header-color);
+$background-color: var(--background-color);
+$primary-color: var(--primary-color);
+$primary-color-semi-trans: var(--primary-color-semi-trans);
+$secondary-color: var(--secondary-color);
+$text-highlight: var(--text-highlight);
+
+$box-outline: var(--box-outline);
+$box-outline-focus: var(--box-outline-focus);
+
+
+
+body {
+    font-family: $font;
+    background-image: url('./bg.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: $primary-color-semi-trans;
+        backdrop-filter: grayscale(80%) brightness(50%) blur(2px);
+
+    pointer-events: none;
+    /* Ensures overlay doesn’t interfere with content below */
+    z-index: 1;
+    /* Ensures the overlay appears above the background */
+}
+
+.content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.promptQ {
+ color: inherit
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: $primary-color;
+    font-family: "Bebas Neue", sans-serif;
+}
+
+button {
+        font-family: "Bebas Neue", sans-serif !important;
+
+}
+
+.header {
+    width: 100%;
+    background-color: $header-color;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    color: $primary-color;
+}
+
+.editableDivBox:hover {
+    outline: $box-outline !important;
+    outline-offset: -1px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+.editableDivBox:focus-within {
+    outline: $box-outline-focus !important;
+    outline-offset: -2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+.fadeHighlight {
+    color: inherit;
+    animation-name: fadeHighlight;
+    animation-duration: 1000s;
+}
+
+@keyframes fadeHighlight {
+    0% {
+        background-color: $text-highlight;
+        }
+
+    50% {
+        background-color: $text-highlight;
+    }
+
+    100% {
+        color: inherit;
+    }
+}
