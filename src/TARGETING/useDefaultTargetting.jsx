@@ -70,6 +70,38 @@ export function useDefaultTargetting(
 		};
 	}, [campaign.target]);
 
+
+
+	//Councillors 
+	useEffect(() => {
+		if (campaign.target !== "edinburgh" && campaign.target !=="glasgow") return;
+		setLoading(true);
+		let cancelled = false;
+
+
+		fetch(
+			`https://raw.githubusercontent.com/gordonmaloney/rep-data/main/${campaign.target}-councillors.json`
+		)			.then((res) => {
+			if (!res.ok) throw new Error("Failed to fetch councillors");
+			return res.json();
+		})
+		.then((data) => {
+
+			setMessaging(data.filter((c) => c.ward == adminDivisions.ward));
+			setLoading(false)
+		
+	}).catch((err) => console.error("Could not load councillors:", err));
+
+	return () => {
+		cancelled = true;
+	};
+
+
+	}, [campaign.target, adminDivisions.ward]);
+
+
+
+
 	// Compute messaging / notMessaging
 	useEffect(() => {
 		if (campaign.customTargetting) return;

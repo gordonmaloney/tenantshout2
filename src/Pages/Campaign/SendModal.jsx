@@ -270,6 +270,8 @@ export const SendModal = ({
 								Share on BlueSky
 							</Button>
 
+{/*
+Need app ID or something
 {Mobile && 
 
 							<Button
@@ -283,6 +285,7 @@ export const SendModal = ({
 >
   Share on Messenger
 </Button>}
+*/}
 </Stack>
 						</div>
 

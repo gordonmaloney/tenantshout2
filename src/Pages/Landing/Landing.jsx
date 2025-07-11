@@ -18,7 +18,7 @@ import { useCampaigns } from '../../CampaignContext';
 const GridStyle = {
 	//border: "1px solid grey",
 
-	width: "100%",
+	width: "90%",
 	maxWidth: "600px",
 	padding: "10px 8px 12px 8px",
 	backgroundColor: "rgba(246, 243, 246, 0.8)",
