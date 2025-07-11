@@ -32,6 +32,22 @@ const AdminDashboard = () => {
 
 
 
+	const formatDate = (isoString) => {
+		if (!isoString) return "";
+		const date = new Date(isoString);
+		const dd = String(date.getDate()).padStart(2, "0");
+		const mm = String(date.getMonth() + 1).padStart(2, "0");
+		const yy = String(date.getFullYear()).slice(-2);
+
+		const hh = String(date.getHours()).padStart(2, "0");
+		const min = String(date.getMinutes()).padStart(2, "0");
+
+
+  return `${dd}/${mm}/${yy} - ${hh}:${min}`;
+	  };
+
+
+
 
 return (
 
@@ -73,9 +89,9 @@ return (
 									<h4 style={{ margin: 0 }}>{campaign.campaign.title}</h4>
 									<br />
 									{campaign.campaign.blurb}
-									<br />
-									<br />
-
+									<br /><br/>
+									{formatDate(campaign?.createdAt || campaign?.updatedAt)}									<br />
+<br/>
 									<div
 									style={{display: 'flex', justifyContent: 'space-around'}}
 									>

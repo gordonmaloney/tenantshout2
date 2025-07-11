@@ -4,6 +4,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { BtnStyle, BtnStyleSmall, BtnStyleTiny } from "../../MUIStyles";
 import Grid from "@mui/material/Grid2";
 import { webmailProviders } from "./webmailProviders";
+import { Stack } from '@mui/material'
 
 const ModalStyle = {
 	position: "absolute",
@@ -166,7 +167,7 @@ export const SendModal = ({
 								href={generateLink()}
 								target="_blank"
 								rel="noopener noreferrer"
-								//onClick={() => handleSend()}
+								onClick={() => setSent(true)}
 								style={{ ...BtnStyle, marginTop: "5px" }}
 							>
 								Send{" "}
@@ -186,7 +187,7 @@ export const SendModal = ({
 											href={generateLink(true)}
 											target="_blank"
 											rel="noopener noreferrer"
-											//onClick={() => handleSend()}
+											onClick={() => setSent(true)}
 											style={{ ...BtnStyleTiny, marginTop: "5px" }}
 										>
 											Send with your native email app
@@ -241,8 +242,14 @@ export const SendModal = ({
 							can use the buttons below:
 						</p>
 						<div style={{ display: "flex", justifyContent: "space-around" }}>
+
+						<Stack
+  direction="row"
+  justifyContent="center"
+  flexWrap="wrap"       // so buttons drop to the next line on small screens
+>
 							<Button
-								sx={BtnStyle}
+								sx={{...BtnStyle, margin: '10px 10px'}}
 								target="_blank"
 								href={`http://wa.me/?text=${encodeURI(
 									"Hey! I've just taken part in this campaign - check it out here: " +
@@ -254,7 +261,7 @@ export const SendModal = ({
 								Share on WhatsApp
 							</Button>
 							<Button
-								sx={BtnStyle}
+								sx={{...BtnStyle, margin: '10px 10px'}}
 								target="_blank"
 								href={`https://bsky.app/intent/compose?text=${encodeURI(
 									campaign.title + " " + window.location.href
@@ -262,6 +269,21 @@ export const SendModal = ({
 							>
 								Share on BlueSky
 							</Button>
+
+{Mobile && 
+
+							<Button
+							sx={{...BtnStyle, margin: '10px 10px'}}
+							target="_blank"
+  href={
+    `fb-messenger://share?link=${encodeURIComponent(
+      campaign.title + " " + window.location.href
+    )}`
+  }
+>
+  Share on Messenger
+</Button>}
+</Stack>
 						</div>
 
 						<p>

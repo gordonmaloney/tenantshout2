@@ -39,7 +39,7 @@ const Landing = () => {
 			<div style={GridStyle} spacing={1} justifyContent="space-around">
 				<h2 style={{margin: '0px'}}>TenantAct</h2>
 
-				<p>A platform for Living Rent branches to run advocacy campaigns</p>
+				<p>A platform for Living Rent members to run advocacy campaigns</p>
 			</div>
 		</div>
 	);
