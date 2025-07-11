@@ -36,42 +36,11 @@ const Landing = () => {
 
 	return (
 		<div>
-			<Grid container style={GridStyle} spacing={1} justifyContent="space-around">
-				{campaigns.map((campaign) => (
-					<Grid>
-						<Card
-							component="div"
-							key={campaign.campaign.id}
-							sx={{
-								display: "inline-block",
-								maxWidth: 270,
-								backgroundColor: "#F0F5FA",
-								//margin: "auto",
-								boxShadow: 3,
-								borderRadius: 2,
-								transition: "0.3s",
-								"&:hover": { boxShadow: 6 },
-							}}
-						>
-							<Link
-								to={`/act/${campaign.campaign.id}`}
-								style={{ textDecoration: "none", color: "inherit" }}
-							>
-								<CardContent>
-									<h4 style={{ margin: 0 }}>{campaign.campaign.title}</h4>
-									<br />
-									{campaign.campaign.blurb}
-									<br />
-									<br />
-									<center>
-										<Button sx={BtnStyleSmall}>Take Action</Button>
-									</center>
-								</CardContent>
-							</Link>
-						</Card>
-					</Grid>
-				))}
-			</Grid>
+			<div style={GridStyle} spacing={1} justifyContent="space-around">
+				<h2 style={{margin: '0px'}}>TenantAct</h2>
+
+				<p>A platform for Living Rent branches to run advocacy campaigns</p>
+			</div>
 		</div>
 	);
 };

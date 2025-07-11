@@ -11,7 +11,7 @@ import {
   Typography
 } from '@mui/material';
 import { ENDPOINT } from '../../Endpoints';
-import { BtnStyleSmall } from '../../MUIStyles';
+import { BtnStyleSmall, TextFieldStyle } from '../../MUIStyles';
 
 /**
  * Button to delete a campaign with confirmation dialog.
@@ -64,9 +64,11 @@ export default function DeleteCampaignButton({ campaignId, onDeleted = () => {} 
           <DialogContentText>
             This action cannot be undone. To confirm deletion, type "delete" below.
           </DialogContentText>
+          <br/>
           <TextField
             autoFocus
             margin="dense"
+            sx={TextFieldStyle}
             label={`Type "delete" to confirm`}
             fullWidth
             value={confirmText}

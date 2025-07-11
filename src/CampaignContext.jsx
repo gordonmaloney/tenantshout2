@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { ENDPOINT } from './Endpoints';
 
 export const CampaignContext = createContext();
 
@@ -10,7 +11,7 @@ export const CampaignProvider = ({ children }) => {
 
   const fetchCampaigns = async () => {
     try {
-      const res = await fetch('http://localhost:3000/campaigns');
+      const res = await fetch(ENDPOINT + 'campaigns/');
       const data = await res.json();
       setCampaigns(data);
     } catch (err) {

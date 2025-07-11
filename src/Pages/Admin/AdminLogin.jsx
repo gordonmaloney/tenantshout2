@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { ENDPOINT } from '../../Endpoints';
 import { useNavigate } from 'react-router-dom';
-import { BtnStyle } from '../../MUIStyles';
+import { BtnStyle, TextFieldStyle } from '../../MUIStyles';
 
 
 /**
@@ -38,12 +38,12 @@ export default function AdminLogin({ onLogin = () => {} }) {
        <h2 style={{margin: '0px', padding: '0p'}}>Log in to view this page</h2>
       </Typography>
       <TextField
+      sx={TextFieldStyle}
         type="password"
         label="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         fullWidth
-        sx={{ mb: 2 }}
       />
       {error && (
         <Typography color="error" sx={{ mb: 2 }}>
