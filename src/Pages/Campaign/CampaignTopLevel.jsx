@@ -2,21 +2,40 @@ import React, { useState }  from "react";
 import { useParams } from "react-router-dom";
 import Campaign from "./Campaign";
 import { ALL_CAMPAIGNS } from "../../Data/CampaignData";
+import { useCampaigns } from '../../CampaignContext';
+
 import CampaignBlurbs from "./CampaignBlurbs";
 
-import { Box, Paper } from "@mui/material";
+import { Box, Paper, Button,   Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogContentText,
+	DialogActions, } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useMediaQuery } from "@mui/material";
 import CampaignAccordion from "./CampaignAccordion";
+import { BtnStyle, BtnStyleSmall } from "../../MUIStyles";
 
-const CampaignTopLevel = () => {
+const CampaignTopLevel = ({testCampaign}) => {
+	const [open, setOpen] = useState(false);
+	const [error, setError] = useState('');
+
+	const handleOpen = () => setOpen(true);
+	const handleClose = () => {
+	  setOpen(false);
+	  setError('');
+	};
+  
+
+		const { campaigns, loading } = useCampaigns();
+		const combinedCampaigns = [...ALL_CAMPAIGNS, ...campaigns]
+		const { campaignId } = useParams();
+		const campaign = testCampaign || combinedCampaigns.find((c) => c.campaignId === campaignId)?.campaign;
+
 	// Use 600px as the breakpoint for "sm" without needing the theme provider
 	const isSmallScreen = useMediaQuery("(max-width:600px)");
 
-	const { campaignId } = useParams();
-	const { campaign } = {
-		...ALL_CAMPAIGNS.find((campaign) => campaign.campaignId == campaignId),
-	};
+
 
 	const GridStyle = {
 		//border: "1px solid grey",
@@ -30,6 +49,18 @@ const CampaignTopLevel = () => {
 	if (!campaign) {
 		return <div>Campaign not found</div>;
 	}
+
+
+
+	const handleGeneral = () => {
+		const message = `Hi, I spotted a bug on ${window.location.host}, on campaign "${campaign.id}"`;
+		window.open(
+		  `https://wa.me/447903700751?text=${encodeURIComponent(message)}`,
+		  '_blank'
+		);
+		handleClose();
+	  };
+	
 
 	return (
 		<Box
@@ -69,26 +100,58 @@ const CampaignTopLevel = () => {
 					</Paper>
 
 					{campaign?.accordion && !isSmallScreen && (
+						<>
+						{campaign?.accordion?.length > 0 && 
 						<Paper sx={GridStyle}>
 							<h3 style={{ margin: "0 0 10px 5px" }}>FAQs</h3>
 							<CampaignAccordion campaign={campaign} />
-						</Paper>
+						</Paper> }
+						<Button sx={{...BtnStyleSmall}} color="secondary" onClick={handleOpen}>
+						Report a Bug
+					  </Button>
+					  </>
 					)}
 				</Grid>
 				<Grid size={{ xs: 12, md: 8 }}>
 					<Paper sx={GridStyle}>
 						<Campaign campaign={campaign} stage={stage} setStage={setStage} />
+					
 					</Paper>
-
 					{campaign?.accordion &&
 						isSmallScreen && (
+							<>
+							{campaign?.accordion?.length > 0 && 
 							<Paper sx={GridStyle}>
 								<h3 style={{ margin: "0 0 10px 5px" }}>FAQs</h3>
 								<CampaignAccordion campaign={campaign} />
-							</Paper>
+
+		
+							</Paper>}
+								<Button sx={{...BtnStyleSmall, float: 'right'}} color="secondary" onClick={handleOpen}>
+								Report a Bug
+							  </Button>
+							  </>
 						)}
+							
 				</Grid>
+				
 			</Grid>
+
+			
+			<Dialog open={open} onClose={handleClose}  fullWidth>
+        <DialogTitle
+		><h3 style={{margin: '0px'}}>Report a Bug</h3></DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Thanks! Use the button below to send a WhatsApp message and we'll get it fixed ASAP.
+          </DialogContentText>
+    
+        </DialogContent>
+        <DialogActions>
+          <Button sx={BtnStyleSmall} onClick={handleGeneral}>Report</Button>
+        </DialogActions>
+      </Dialog>
+
 		</Box>
 	);
 };

@@ -54,15 +54,8 @@ Thank you,
 				},
 				{
 					q: `How can I get more involved in the campaign?`,
-					a: (
-						<>
-							Great question! And the answer is simple:{" "}
-							<a href="https://livingrent.org/join" target="_blank">
-								join Living Rent
-							</a>{" "}
-							and get active in your local branch.
-						</>
-					),
+					a: `Great question! And the answer is simple: <a href="https://livingrent.org/join" target="_blank">join Living Rent</a> and get active in your local branch.`,
+
 				},
 			],
 		},
@@ -150,6 +143,7 @@ Sincerely,
 			subject: "test",
 			bcc: "test@test.com",
 			template: `Dear members of the Regulatory Committee,\n\nadfh`,
+			accordion: [],
 		},
 	},
 ];

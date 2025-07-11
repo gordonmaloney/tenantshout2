@@ -23,8 +23,10 @@ import { BtnStyleSmall, BtnStyle, CheckBoxStyle } from "../../../MUIStyles";
 import { TextFieldStyle } from "../../../MUIStyles";
 import EditableDiv from "../../../Components/EditableDiv";
 
-import { useDefaultTargetting } from "./useDefaultTargetting";
-import { useCustomTargetting } from "./useCustomTargetting";
+
+import { useDefaultTargetting } from "../../../TARGETING/useDefaultTargetting";
+import { useCustomTargetting } from "../../../TARGETING/useCustomTargetting";
+
 
 const Message = ({
 	campaign,
@@ -546,6 +548,8 @@ const Message = ({
 				copyIn={copyIn}
 				emailClient={emailClient}
 			/>
+
+
 		</div>
 	);
 };

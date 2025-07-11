@@ -10,8 +10,12 @@ import { BtnStyleSmall, TextFieldStyle } from "../../MUIStyles";
 
 import { webmailProviders } from "./webmailProviders";
 
-const Campaign = ({ campaign, stage, setStage }) => {
+const Campaign = ({ campaign, stage, setStage, }) => {
 	const [postcode, setPostcode] = useState("");
+
+	useEffect(() => {
+
+	}, [postcode])
 
 	const [adminDivisions, setAdminDivisions] = useState({
 		ward: "",
@@ -116,6 +120,7 @@ const Campaign = ({ campaign, stage, setStage }) => {
 		checkEmailClient();
 		setStage((old) => old + 1);
 	};
+
 
 	return (
 		<div>

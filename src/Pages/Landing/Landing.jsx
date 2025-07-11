@@ -12,6 +12,8 @@ import {
 import { Grid2 as Grid } from "@mui/material";
 import { ALL_CAMPAIGNS } from "../../Data/CampaignData";
 import { BtnStyle, BtnStyleSmall } from "../../MUIStyles";
+import { useCampaigns } from '../../CampaignContext';
+
 
 const GridStyle = {
 	//border: "1px solid grey",
@@ -26,10 +28,16 @@ const GridStyle = {
 
 
 const Landing = () => {
+	const { campaigns, loading } = useCampaigns();
+
+
+
+
+
 	return (
 		<div>
 			<Grid container style={GridStyle} spacing={1} justifyContent="space-around">
-				{ALL_CAMPAIGNS.map((campaign) => (
+				{campaigns.map((campaign) => (
 					<Grid>
 						<Card
 							component="div"

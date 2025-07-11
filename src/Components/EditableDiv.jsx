@@ -82,9 +82,15 @@ const EditableDiv = ({
 						height: "auto",
 						whiteSpace: "pre-wrap",
 					}}
-					contentEditable
 					ref={textFieldRef}
+
+
+					
+					contentEditable
 					suppressContentEditableWarning={true}
+
+
+
 					autoFocus
 					onInput={(e) => setLength(e.target?.innerText.length)}
 					onBlur={() => onBodyChange(textFieldRef.current.innerText)}

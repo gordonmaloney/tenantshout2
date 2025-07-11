@@ -6,6 +6,8 @@ import {
 	Typography,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import DOMPurify from 'dompurify';
+
 
 const CampaignAccordion = ({ campaign }) => {
 	const [expanded, setExpanded] = useState(false);
@@ -42,7 +44,7 @@ const CampaignAccordion = ({ campaign }) => {
 						{item.q}
 					</AccordionSummary>
 					<AccordionDetails>
-						{item.a}
+					<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.a) }} />
 					</AccordionDetails>
 				</Accordion>
 			))}
