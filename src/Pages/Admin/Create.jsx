@@ -27,6 +27,7 @@ import CampaignTopLevel from '../Campaign/CampaignTopLevel'; // Make sure this c
 import { CAMPAIGN_POST_ENDPOINT, ENDPOINT } from '../../Endpoints';
 import { TargetingOptions } from '../../TARGETING/TargetingOptions';
 import { useCampaigns } from '../../CampaignContext';
+import { BtnStyleSmall, CheckBoxStyle, StepperStyle, TextFieldStyle, BtnStyle, RadioGroupStyle } from '../../MUIStyles';
 
 const steps = ['Overview', 'Prompts', 'Template Message'];
 
@@ -194,7 +195,7 @@ export default function CampaignSetupForm({edittingCampaign}) {
 
   return (
     <Box sx={{ width: '90%', margin: '20px auto', p: 4, bgcolor: 'white' }}>
-      <Stepper activeStep={activeStep}>
+      <Stepper activeStep={activeStep} sx={StepperStyle}>
         {steps.map((label) => (
           <Step key={label}>
             <StepLabel>{label}</StepLabel>
@@ -205,13 +206,13 @@ export default function CampaignSetupForm({edittingCampaign}) {
       <Box sx={{ mt: 4 }}>
         {activeStep === 0 && (
           <Box>
-            <TextField fullWidth label="Campaign ID" value={campaign.id} onChange={(e) => handleChange('id', e.target.value)} sx={{ mb: 2 }} />
-            <TextField fullWidth label="Host" value={campaign.host} onChange={(e) => handleChange('host', e.target.value)} sx={{ mb: 2 }} />
-            <TextField fullWidth label="BCC" value={campaign.bcc} onChange={(e) => handleChange('bcc', e.target.value)} sx={{ mb: 2 }} />
-            <TextField fullWidth label="Campaign Title" value={campaign.title} onChange={(e) => handleChange('title', e.target.value)} sx={{ mb: 2 }} />
-            <TextField fullWidth multiline rows={4} label="Blurb" value={campaign.blurb} onChange={(e) => handleChange('blurb', e.target.value)} sx={{ mb: 2 }} />
-            <TextField fullWidth label="Link" value={campaign.link} onChange={(e) => handleChange('link', e.target.value)} sx={{ mb: 2 }} />
-            <FormControl fullWidth sx={{mb:2}}>
+            <TextField fullWidth label="Campaign ID" value={campaign.id} onChange={(e) => handleChange('id', e.target.value)}  sx={TextFieldStyle} />
+            <TextField fullWidth label="Host" value={campaign.host} onChange={(e) => handleChange('host', e.target.value)}  sx={TextFieldStyle} />
+            <TextField fullWidth label="BCC" value={campaign.bcc} onChange={(e) => handleChange('bcc', e.target.value)} sx={TextFieldStyle} />
+            <TextField fullWidth label="Campaign Title" value={campaign.title} onChange={(e) => handleChange('title', e.target.value)}  sx={TextFieldStyle} />
+            <TextField fullWidth multiline rows={4} label="Blurb" value={campaign.blurb} onChange={(e) => handleChange('blurb', e.target.value)}  sx={TextFieldStyle} />
+            <TextField fullWidth label="Link" value={campaign.link} onChange={(e) => handleChange('link', e.target.value)}  sx={TextFieldStyle} />
+            <FormControl fullWidth  sx={TextFieldStyle} >
   <InputLabel id="target-label">Target</InputLabel>
   <Select
     labelId="target-label"
@@ -229,39 +230,56 @@ export default function CampaignSetupForm({edittingCampaign}) {
             {campaign.target === 'custom' && (
               <Box sx={{ mb: 2 }}>
                 <Typography variant="body2" sx={{ mb: 1 }}>Custom targets: {customTargets.map(t => t.name).filter(Boolean).join(', ')}</Typography>
-                <Button variant="outlined" onClick={() => setCustomTargetModalOpen(true)}>Edit Custom Targets</Button>
+                <Button 
+                sx={BtnStyleSmall}
+                variant="outlined" onClick={() => setCustomTargetModalOpen(true)}>Edit Custom Targets</Button>
               </Box>
             )}
 
 <Box>
-      <Typography variant="h6">FAQs (Optional)</Typography>
+      <Typography variant="h6"><h2 style={{margin: '0'}}>FAQs (Optional)</h2></Typography>
       {campaign.accordion.map((faq, index) => (
         <Box key={index} sx={{ mb: 2 }}>
-          <TextField fullWidth label="FAQ Question" value={faq.q} onChange={(e) => handleFAQChange(index, 'q', e.target.value)} sx={{ mb: 1 }} />
+          <TextField
+          sx={TextFieldStyle}
+          fullWidth label="FAQ Question" value={faq.q} onChange={(e) => handleFAQChange(index, 'q', e.target.value)}  />
           <TextField
             fullWidth
+            sx={TextFieldStyle}
+
             multiline
             rows={4}
             label="FAQ Answer"
             value={faq.a}
             onChange={(e) => handleFAQChange(index, 'a', e.target.value)}
           />
-          <Button variant="text" size="small" onClick={() => { setEditingFaqIndex(index); setLinkModalOpen(true); }}>Add Link</Button>
+          <Button 
+          sx={BtnStyleSmall}
+          variant="text" size="small" onClick={() => { setEditingFaqIndex(index); setLinkModalOpen(true); }}>Add Link</Button>
         </Box>
       ))}
-      <Button variant="outlined" onClick={() => setCampaign({ ...campaign, accordion: [...campaign.accordion, { q: '', a: '' }] })}>
+      <Button
+                sx={BtnStyleSmall}
+
+      variant="outlined" onClick={() => setCampaign({ ...campaign, accordion: [...campaign.accordion, { q: '', a: '' }] })}>
         Add FAQ
       </Button>
 
       <Dialog open={linkModalOpen} onClose={() => setLinkModalOpen(false)}>
-        <DialogTitle>Add Link</DialogTitle>
+        <DialogTitle><h3 style={{margin: '0'}}>Add Link</h3></DialogTitle>
         <DialogContent>
-          <TextField autoFocus margin="dense" label="Link URL" fullWidth variant="standard" value={linkURL} onChange={(e) => setLinkURL(e.target.value)} />
-          <TextField margin="dense" label="Link Text" fullWidth variant="standard" value={linkText} onChange={(e) => setLinkText(e.target.value)} />
+          <TextField
+                    sx={TextFieldStyle}
+                    autoFocus margin="dense" label="Link URL" fullWidth variant="standard" value={linkURL} onChange={(e) => setLinkURL(e.target.value)} />
+          <TextField          sx={TextFieldStyle}
+ margin="dense" label="Link Text" fullWidth variant="standard" value={linkText} onChange={(e) => setLinkText(e.target.value)} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setLinkModalOpen(false)}>Cancel</Button>
-          <Button onClick={handleInsertLink}>Insert</Button>
+          <Button 
+          sx={BtnStyleSmall}
+          onClick={() => setLinkModalOpen(false)}>Cancel</Button>
+          <Button           sx={BtnStyleSmall}
+onClick={handleInsertLink}>Insert</Button>
         </DialogActions>
       </Dialog>
     </Box>
@@ -272,19 +290,26 @@ export default function CampaignSetupForm({edittingCampaign}) {
           <Box>
             {campaign.prompts.map((prompt, index) => (
               <Box key={index} sx={{ mb: 2 }}>
-                <TextField fullWidth label="Prompt ID" value={prompt.id || ''} onChange={(e) => handlePromptChange(index, 'id', e.target.value)} sx={{ mb: 1 }} />
-                <TextField fullWidth label="Question" value={prompt.question || ''} onChange={(e) => handlePromptChange(index, 'question', e.target.value)} sx={{ mb: 1 }} />
+                <TextField fullWidth label="Prompt ID" value={prompt.id || ''} onChange={(e) => handlePromptChange(index, 'id', e.target.value)}                     sx={TextFieldStyle}
+ />
+                <TextField fullWidth label="Question" value={prompt.question || ''} onChange={(e) => handlePromptChange(index, 'question', e.target.value)}                     sx={TextFieldStyle}
+ />
                 <RadioGroup
+                sx={RadioGroupStyle}
                   row
                   value={prompt.answerType || 'text'}
                   onChange={(e) => handlePromptChange(index, 'answerType', e.target.value)}
                 >
-                  <FormControlLabel value="text" control={<Radio />} label="Text" />
+                  <FormControlLabel 
+                  
+                  value="text" control={<Radio />} label="Text" />
                   <FormControlLabel value="yesno" control={<Radio />} label="Yes/No" />
                 </RadioGroup>
                 <FormControlLabel
                   control={
                     <Checkbox
+
+                    sx={CheckBoxStyle}
                       checked={prompt.required || false}
                       onChange={(e) => handlePromptChange(index, 'required', e.target.checked)}
                     />
@@ -293,7 +318,9 @@ export default function CampaignSetupForm({edittingCampaign}) {
                 />
               </Box>
             ))}
-            <Button variant="outlined" onClick={() => setCampaign({ ...campaign, prompts: [...campaign.prompts, { id: '', question: '', answerType: 'text', required: false }] })}>
+            <Button 
+            sx={BtnStyleSmall}
+            variant="outlined" onClick={() => setCampaign({ ...campaign, prompts: [...campaign.prompts, { id: '', question: '', answerType: 'text', required: false }] })}>
               Add Prompt
             </Button>
           </Box>
@@ -308,17 +335,19 @@ export default function CampaignSetupForm({edittingCampaign}) {
               label="Template Message"
               value={campaign.template}
               onChange={(e) => handleChange('template', e.target.value)}
-              sx={{ mb: 2 }}
-            />
+              sx={TextFieldStyle}            />
 
             {campaign.prompts.length > 0 && <>
             <Typography variant="h6">Insert Prompts</Typography>
             {campaign.prompts.map((prompt, index) => (
               <Box key={index}>
                 {prompt.answerType === 'yesno' ? (
-                  <Button onClick={() => openYesNoModal(prompt)}>{prompt.id}</Button>
+                  <Button
+                  sx={BtnStyleSmall}
+                  onClick={() => openYesNoModal(prompt)}>{prompt.id}</Button>
                 ) : (
-                  <Button onClick={() => insertPrompt(`<<${prompt.id}>>`)}>{prompt.id}</Button>
+                  <Button           sx={BtnStyleSmall}
+                  onClick={() => insertPrompt(`<<${prompt.id}>>`)}>{prompt.id}</Button>
                 )}
               </Box>
             ))}</>}
@@ -326,20 +355,24 @@ export default function CampaignSetupForm({edittingCampaign}) {
         )}
 
         <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
-          <Button disabled={activeStep === 0} onClick={handleBack}>Back</Button>
+        
+        {activeStep !== 0 ?
+          <Button  sx={{...BtnStyle, margin: '0 5px'}} disabled={activeStep === 0} onClick={handleBack}>Back</Button> : <div></div>}
           <Box>
             {activeStep === steps.length - 1 && (
-              <Button sx={{ mr: 2 }} variant="outlined" onClick={() => setPreviewOpen(true)}>Preview</Button>
+              <Button                       sx={{...BtnStyle, margin: '0 5px'}}
+              variant="outlined" onClick={() => setPreviewOpen(true)}>Preview</Button>
             )}
-            <Button onClick={handleNext}>{activeStep === steps.length - 1 ? 'Finish' : 'Next'}</Button>
+            <Button                         sx={{...BtnStyle, margin: '0 5px'}}
+onClick={handleNext}>{activeStep === steps.length - 1 ? 'Finish' : 'Next'}</Button>
           </Box>
         </Box>
 
         <Dialog open={openModal} onClose={() => setOpenModal(false)}>
           <DialogTitle>Insert Yes/No Prompt Text</DialogTitle>
           <DialogContent>
-            <TextField fullWidth label="Yes Text" value={yesText} onChange={(e) => setYesText(e.target.value)} sx={{ mb: 2 }} />
-            <TextField fullWidth label="No Text" value={noText} onChange={(e) => setNoText(e.target.value)} />
+            <TextField fullWidth label="Yes Text" value={yesText} onChange={(e) => setYesText(e.target.value)}  sx={TextFieldStyle} />
+            <TextField fullWidth label="No Text" value={noText} onChange={(e) => setNoText(e.target.value)}  sx={TextFieldStyle}/>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpenModal(false)}>Cancel</Button>
@@ -357,24 +390,28 @@ export default function CampaignSetupForm({edittingCampaign}) {
                   label="Name"
                   value={target.name || ''}
                   onChange={(e) => handleCustomTargetChange(index, 'name', e.target.value)}
-                  sx={{ mb: 1 }}
+                  sx={TextFieldStyle}
                 />
                 <TextField
                   fullWidth
                   label="Email"
                   value={target.email || ''}
                   onChange={(e) => handleCustomTargetChange(index, 'email', e.target.value)}
+                  sx={TextFieldStyle}
                 />
               </Box>
             ))}
-            <Button onClick={() => {
+            <Button                       sx={BtnStyle}
+onClick={() => {
               const updated = [...customTargets, { name: '', email: '' }];
               setCustomTargets(updated);
               setCampaign({ ...campaign, customTarget: updated });
             }}>Add Target</Button>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setCustomTargetModalOpen(false)}>Done</Button>
+            <Button 
+                      sx={BtnStyle}
+                      onClick={() => setCustomTargetModalOpen(false)}>Done</Button>
           </DialogActions>
         </Dialog>
 

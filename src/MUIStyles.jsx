@@ -86,3 +86,76 @@ export const TextFieldStyle = {
 		},
 	},
 };
+
+
+// StepperStyle.js
+export const StepperStyle = {
+	backgroundColor: 'white',
+	p: 0,
+  
+	// style the connector line
+	'& .MuiStepConnector-root .MuiStepConnector-line': {
+	  borderColor: 'var(--textfield-outline)',
+	  borderTopWidth: 3,
+	},
+  
+	// base icon color
+	'& .MuiStepIcon-root': {
+	  color: '#ccc',
+	},
+	// active step icon
+	'& .MuiStepIcon-root.Mui-active': {
+	  color: 'var(--textfield-outline)',
+	},
+	// completed step icon
+	'& .MuiStepIcon-root.Mui-completed': {
+	  color: 'var(--textfield-outline)',
+	},
+  
+	// label text
+	'& .MuiStepLabel-label': {
+	  color: 'rgba(0,0,0,0.6)',
+	},
+	// active label
+	'& .MuiStepLabel-label.Mui-active': {
+	  color: 'var(--textfield-outline)',
+	},
+	// completed label
+	'& .MuiStepLabel-label.Mui-completed': {
+	  color: 'var(--textfield-outline)',
+	},
+  };
+  
+
+  // in your styles file (e.g. src/styles/RadioStyles.js)
+export const RadioGroupStyle = {
+
+  
+	// target each label+radio wrapper
+	'& .MuiFormControlLabel-root': {
+	  margin: 0,
+  
+	  // style the radio itself
+	  '& .MuiRadio-root': {
+		color: 'var(--textfield-outline)',
+		'&.Mui-checked': {
+		  color: 'var(--textfield-outline)',
+		},
+		'&:hover': {
+		  backgroundColor: 'rgba(0,0,0,0.08)',
+		},
+		'&.Mui-focusVisible': {
+		  outline: '2px solid var(--textfield-outline)',
+		},
+	  },
+  
+	  // style the label text
+	  '& .MuiFormControlLabel-label': {
+		color: 'rgba(0,0,0,0.6)',
+		'&.Mui-disabled': {
+		  color: 'rgba(0,0,0,0.38)',
+		},
+	  },
+	},
+  };
+  

@@ -56,17 +56,20 @@ return (
 
 
 
-
 			<Grid container style={GridStyle} spacing={1} justifyContent="space-around">
 
 				<Grid size={12}>
-				<center>
+
+
+<center>
 			<Link to="../create">
-			<Button sx={{...BtnStyle, margin: '30px'}}>
+			<Button sx={{...BtnStyle, margin: '20px 0 30px 0'}}>
 				Create new Campaign
 			</Button>
 			
-			</Link></center>
+			</Link>
+			</center>
+	<h1 style={{margin: 0, textAlign: 'center'}}>Edit Campaigns:</h1>
 				</Grid>
 				{campaigns.map((campaign) => (
 					<Grid>
@@ -90,7 +93,7 @@ return (
 									<br />
 									{campaign.campaign.blurb}
 									<br /><br/>
-									{formatDate(campaign?.createdAt || campaign?.updatedAt)}									<br />
+									<span >Last updated: {formatDate(campaign?.createdAt || campaign?.updatedAt)}	</span>								<br />
 <br/>
 									<div
 									style={{display: 'flex', justifyContent: 'space-around'}}

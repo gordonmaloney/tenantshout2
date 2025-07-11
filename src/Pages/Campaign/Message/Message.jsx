@@ -64,9 +64,17 @@ const Message = ({
 
 	const promptsChanged = false;
 	const { template } = campaign;
-	const [newTemplate, setNewTemplate] = useState(
-		campaign.template + `\n${postcode.trim().toUpperCase()}`
-	);
+
+
+	const includePostcodeArray = ["edinburgh", "glasgow", "msps", "mps"]
+
+		const [newTemplate, setNewTemplate] = useState(
+			`${campaign.template}${
+			  includePostcodeArray.includes(campaign.target) && postcode.trim()
+				? `\n${postcode.trim().toUpperCase()}`
+				: ""
+			}`
+		  );
 
 	useEffect(() => {
 		if (

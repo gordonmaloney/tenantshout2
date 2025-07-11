@@ -101,6 +101,33 @@ export function useDefaultTargetting(
 
 
 
+		//MPs 
+		useEffect(() => {
+			if (campaign.target !== "mps") return;
+			setLoading(true);
+			let cancelled = false;
+	
+	
+			fetch(
+				`https://raw.githubusercontent.com/gordonmaloney/rep-data/main/MPs.json`
+			)			.then((res) => {
+				if (!res.ok) throw new Error("Failed to fetch councillors");
+				return res.json();
+			})
+			.then((data) => {
+	
+				setMessaging(data.filter((c) => c.constituency == adminDivisions.constituency));
+				setLoading(false)
+			
+		}).catch((err) => console.error("Could not load MPs:", err));
+	
+		return () => {
+			cancelled = true;
+		};
+	
+	
+		}, [campaign.target, adminDivisions.constituency]);
+
 
 	// Compute messaging / notMessaging
 	useEffect(() => {
