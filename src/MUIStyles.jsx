@@ -125,6 +125,43 @@ export const StepperStyle = {
 	  color: 'var(--textfield-outline)',
 	},
   };
+
+
+  export const MobileStepperStyle = {
+	backgroundColor: 'white',
+	p: 0,
+  
+	// center the dots
+	'& .MuiMobileStepper-dots': {
+	  display: 'flex',
+	  justifyContent: 'center',
+	  p: 1,
+	},
+  
+	// inactive dots
+	'& .MuiMobileStepper-dot': {
+	  backgroundColor: '#ccc',
+	  width: 8,
+	  height: 8,
+	  margin: '0 4px',
+	},
+  
+	// active dot (override default blue)
+	'& .MuiMobileStepper-dotActive': {
+	  backgroundColor: 'var(--textfield-outline) !important',
+	},
+  
+	// override the Next/Back button text color
+	// these Buttons are rendered with .MuiButton-text and .MuiButton-textPrimary
+	'& .MuiMobileStepper-button': {
+	  // target the inner <button>
+	  '& button.MuiButton-text': {
+		color: 'var(--textfield-outline) !important',
+	  },
+	},
+  };
+  
+  
   
 
   // in your styles file (e.g. src/styles/RadioStyles.js)

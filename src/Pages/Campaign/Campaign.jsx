@@ -121,6 +121,9 @@ const Campaign = ({ campaign, stage, setStage, }) => {
 		setStage((old) => old + 1);
 	};
 
+	useEffect(() => {
+		campaign.target == "custom" && prompts.length == 0 && stage == 0 && setStage(1)
+	}, [stage])
 
 	return (
 		<div>
@@ -143,7 +146,7 @@ const Campaign = ({ campaign, stage, setStage, }) => {
 						setPrompts={setPrompts}
 					/>
 
-					<div key={prompt.id} style={{display: campaign.target == "email" ? 'inline-block' : 'none'}}>
+					<div key={prompt.id} style={{display: campaign.channel == "email" ? 'block' : 'none'}}>
 						<div className="email">Your email: </div>
 
 						<TextField

@@ -43,7 +43,7 @@ export default function CampaignSetupForm({edittingCampaign}) {
   const [campaign, setCampaign] = useState({
     id: '',
     host: '',
-    channel: '',
+    channel: 'email',
     title: '',
     blurb: '',
     link: '',
@@ -64,11 +64,15 @@ export default function CampaignSetupForm({edittingCampaign}) {
   const [linkText, setLinkText] = useState('');
   const [editingFaqIndex, setEditingFaqIndex] = useState(null);
 
+  const [edittingCampaignId, setEdittingCampaignId] = useState('')
+
   useEffect(() => {
     if (edittingCampaign) {
+    setEdittingCampaignId(edittingCampaign.id)
     setCampaign(edittingCampaign)
     }
   }, [edittingCampaign])
+
 
 
   const token = localStorage.getItem('token');
@@ -97,7 +101,7 @@ export default function CampaignSetupForm({edittingCampaign}) {
           throw new Error('Failed to post campaign');
         }
       } else if (edittingCampaign) {
-        const response = await fetch(ENDPOINT + 'campaigns/' + `${campaign.id}`, {
+        const response = await fetch(ENDPOINT + 'campaigns/' + `${edittingCampaignId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -191,7 +195,10 @@ export default function CampaignSetupForm({edittingCampaign}) {
   };
 
 
-  console.log(campaign)
+
+  console.log(edittingCampaignId)
+
+
 
   return (
     <Box sx={{ width: '90%', margin: '20px auto', p: 4, bgcolor: 'white' }}>
@@ -207,6 +214,19 @@ export default function CampaignSetupForm({edittingCampaign}) {
         {activeStep === 0 && (
           <Box>
             <TextField fullWidth label="Campaign ID" value={campaign.id} onChange={(e) => handleChange('id', e.target.value)}  sx={TextFieldStyle} />
+
+          {edittingCampaign && edittingCampaignId !== campaign.id && (
+            <p style={{margin: '-6px 0 8px 0', color: 'red', fontSize: 'small'}}>
+              Caution: changing your campaign ID from <u>{edittingCampaignId}</u> this will change the URL of your campaign
+            </p>
+           )}
+
+{campaigns.map(camp => camp.campaign.id).includes(campaign.id) && campaign.id !== edittingCampaignId && (
+            <p style={{margin: '-6px 0 8px 0', color: 'red', fontSize: 'small'}}>
+              This campaign ID is already taken.
+            </p>
+           )}
+            
             <TextField fullWidth label="Host" value={campaign.host} onChange={(e) => handleChange('host', e.target.value)}  sx={TextFieldStyle} />
             <TextField fullWidth label="BCC" value={campaign.bcc} onChange={(e) => handleChange('bcc', e.target.value)} sx={TextFieldStyle} />
             <TextField fullWidth label="Campaign Title" value={campaign.title} onChange={(e) => handleChange('title', e.target.value)}  sx={TextFieldStyle} />
@@ -228,7 +248,9 @@ export default function CampaignSetupForm({edittingCampaign}) {
   >
     <MenuItem value="email">Email</MenuItem>
     <MenuItem value="twitter">Twitter/X</MenuItem>
+    <MenuItem value="phone">Phone</MenuItem>
   </Select>
+  {campaign.channel == "phone" && <span style={{marginTop: '4px'}}><em>Phone campaigns are an experimental feature that are currently only compatible with custom targetting - we will add numbers for MSPs soon.</em></span>}
 </FormControl>
             <FormControl fullWidth  sx={TextFieldStyle} >
   <InputLabel id="target-label">Target</InputLabel>
@@ -255,7 +277,7 @@ export default function CampaignSetupForm({edittingCampaign}) {
             )}
 
 <Box>
-      <Typography variant="h6"><h2 style={{margin: '0'}}>FAQs (Optional)</h2></Typography>
+      <Typography ><h2 style={{margin: '0'}}>FAQs (Optional)</h2></Typography>
       {campaign.accordion.map((faq, index) => (
         <Box key={index} sx={{ mb: 2 }}>
           <TextField
@@ -306,6 +328,7 @@ onClick={handleInsertLink}>Insert</Button>
 
         {activeStep === 1 && (
           <Box>
+            {campaign.channel == "phone" && <center><p><em>No need for prompts in phone campaigns</em></p></center>}
             {campaign.prompts.map((prompt, index) => (
               <Box key={index} sx={{ mb: 2 }}>
                 <TextField fullWidth label="Prompt ID" value={prompt.id || ''} onChange={(e) => handlePromptChange(index, 'id', e.target.value)}                     sx={TextFieldStyle}
@@ -346,6 +369,8 @@ onClick={handleInsertLink}>Insert</Button>
 
         {activeStep === 2 && (
           <Box>
+                        {campaign.channel == "phone" && <center><p><em>For phone campaigns, instead of a template message, suggest key talking points for the call.</em></p></center>}
+
             <TextField
               fullWidth
               multiline
@@ -410,13 +435,30 @@ onClick={handleNext}>{activeStep === steps.length - 1 ? 'Finish' : 'Next'}</Butt
                   onChange={(e) => handleCustomTargetChange(index, 'name', e.target.value)}
                   sx={TextFieldStyle}
                 />
+                {campaign.channel == "email" &&
                 <TextField
                   fullWidth
                   label="Email"
                   value={target.email || ''}
                   onChange={(e) => handleCustomTargetChange(index, 'email', e.target.value)}
                   sx={TextFieldStyle}
-                />
+                /> }
+                                {campaign.channel == "twitter" &&
+                <TextField
+                  fullWidth
+                  label="Twitter handle"
+                  value={target.handle || ''}
+                  onChange={(e) => handleCustomTargetChange(index, 'handle', e.target.value)}
+                  sx={TextFieldStyle}
+                /> }
+                                                {campaign.channel == "phone" &&
+                <TextField
+                  fullWidth
+                  label="Phone number"
+                  value={target.phone || ''}
+                  onChange={(e) => handleCustomTargetChange(index, 'phone', e.target.value)}
+                  sx={TextFieldStyle}
+                /> }
               </Box>
             ))}
             <Button                       sx={BtnStyle}

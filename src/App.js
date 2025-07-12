@@ -10,7 +10,8 @@ import AdminLogin from './Pages/Admin/AdminLogin';
 import { CampaignProvider } from './CampaignContext';
 import { ENDPOINT } from './Endpoints';
 import ProtectedRoute from './ProtectedRoute';
-
+import Footer from './Components/Footer';
+import {Box} from '@mui/material'
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -37,9 +38,18 @@ function App() {
 
   return (
     <CampaignProvider>
-      <div className="content">
-        <Router>
+   <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh',   // fill the viewport height
+        }}
+        className="content"
+      >        <Router>
           <Header />
+
+             <Box component="main" sx={{ flexGrow: 1 }}>
+
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/act/:campaignId" element={<CampaignTopLevel />} />
@@ -76,8 +86,11 @@ function App() {
 
 
           </Routes>
+
+          </Box>
+          <Footer />
         </Router>
-      </div>
+      </Box>
     </CampaignProvider>
   );
 }

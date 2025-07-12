@@ -36,6 +36,8 @@ export default function AdminLogin({ onLogin = () => {} }) {
     <Box sx={{ maxWidth: 400, mx: 'auto', mt: 10, backgroundColor: "white", padding: '20px', borderRadius: '10px' }}>
       <Typography gutterBottom >
        <h2 style={{margin: '0px', padding: '0p'}}>Log in to view this page</h2>
+
+       Creating, editing and deleting campaigns is password-protected to make sure campaigns go through the proper democratic processes for the union. To get access, contact your staff member.
       </Typography>
       <TextField
       sx={TextFieldStyle}

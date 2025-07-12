@@ -211,7 +211,7 @@ export const SendModal = ({
 											onClick={() => setSent(true)}
 											style={{ ...BtnStyleTiny, marginTop: "5px" }}
 										>
-											Send with your native email app
+											Send with your email app
 										</Button>
 									</div>
 								)}

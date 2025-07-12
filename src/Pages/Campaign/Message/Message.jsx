@@ -255,7 +255,7 @@ const Message = ({
 
 	const editableDivProps = useMemo(
 		() => ({
-			label: campaign.channel === "email" ? "Body" : "Your Tweet",
+			label: campaign.channel === "email" ? "Body" : campaign.channel == "twitter" ? "Your Tweet" : campaign.channel == "phone" && "Talking tips for your call:",
 			body: newTemplate,
 			onBodyChange: setNewTemplate,
 			substrings: [
@@ -545,16 +545,31 @@ const Message = ({
 				style={{
 					display: "flex",
 					width: "100%",
-					justifyContent: "space-between",
+					justifyContent: (campaign.target !== "custom" || prompts.length > 0) ? "space-between" : "space-around",
 				}}
 			>
+
+				{(campaign.target !== "custom" || prompts.length > 0) &&
 				<Button sx={BtnStyleSmall} onClick={() => setStage((old) => old - 1)}>
 					Back
-				</Button>
+				</Button>}
 
+				{campaign.channel !== "phone" ?
 				<Button sx={BtnStyleSmall} onClick={() => setIsSendOpen(true)}>
 					Send
+				</Button> : 
+				
+				<center>
+				
+						<p style={{fontSize: 'large'}}>
+						When you're ready, just dial <u>{campaign.customTarget[0].phone}</u>, or click the button below.
+						</p>
+				<Button sx={BtnStyleSmall} href={`tel:${campaign.customTarget[0].phone}`} onClick={() => {}}>
+					Phone {campaign.customTarget[0].phone}
 				</Button>
+					</center>
+					
+					}
 			</div>
 
 			<SendModal
