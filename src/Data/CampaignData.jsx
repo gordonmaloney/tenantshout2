@@ -8,7 +8,7 @@ export const ALL_CAMPAIGNS = [
 			channel: "email",
 			target: "msps",
 			blurb: `Scotland's housing crisis is only getting worse - but MSPs have their heads in the sand. Use this tool to email them and make sure they can't ignore the impact rent hikes are having on tenants.`,
-			link: "https://livingrent.org/",
+			link: "http://livingrent.org/",
 			prompts: [
 				{
 					id: "yourname",

@@ -13,6 +13,7 @@ import {
   DialogActions,
   Modal,
   Grid,
+  FormHelperText,
   RadioGroup,
   FormControlLabel,
   Radio,
@@ -24,14 +25,16 @@ import {
   Stack
 } from '@mui/material';
 import CampaignTopLevel from '../Campaign/CampaignTopLevel'; // Make sure this component exists
-import { CAMPAIGN_POST_ENDPOINT, ENDPOINT } from '../../Endpoints';
+import {  ENDPOINT } from '../../Endpoints';
 import { TargetingOptions } from '../../TARGETING/TargetingOptions';
 import { useCampaigns } from '../../CampaignContext';
 import { BtnStyleSmall, CheckBoxStyle, StepperStyle, TextFieldStyle, BtnStyle, RadioGroupStyle } from '../../MUIStyles';
+import { useNavigate } from "react-router";
 
 const steps = ['Overview', 'Prompts', 'Template Message'];
 
 export default function CampaignSetupForm({edittingCampaign}) {
+  const navigate = useNavigate();
 
       const { campaigns, loading, fetchCampaigns } = useCampaigns();
   
@@ -117,10 +120,12 @@ export default function CampaignSetupForm({edittingCampaign}) {
           fetchCampaigns();
         }
         }
-  
    
   
+        fetchCampaigns();
         alert('Campaign successfully submitted!');
+        navigate(`../act/${campaign.id}`)
+
       } catch (error) {
         console.error('Submission error:', error);
         alert('There was an error submitting the campaign.');
@@ -169,7 +174,7 @@ export default function CampaignSetupForm({edittingCampaign}) {
 
   const handleInsertYesNo = () => {
     const id = currentPrompt.id;
-    const insertText = `<<${id}=yes:${yesText}>> <<${id}=no:${noText}>>`;
+    const insertText = `${yesText !== "" ? `<<${id}=yes:${yesText}>>` : ''}${noText !== "" ? `<<${id}=no:${noText}>>` : ''}`;
     insertPrompt(insertText);
     setOpenModal(false);
   };
@@ -202,6 +207,9 @@ export default function CampaignSetupForm({edittingCampaign}) {
 
   return (
     <Box sx={{ width: '90%', margin: '20px auto', p: 4, bgcolor: 'white' }}>
+
+
+      
       <Stepper activeStep={activeStep} sx={StepperStyle}>
         {steps.map((label) => (
           <Step key={label}>
@@ -213,7 +221,9 @@ export default function CampaignSetupForm({edittingCampaign}) {
       <Box sx={{ mt: 4 }}>
         {activeStep === 0 && (
           <Box>
-            <TextField fullWidth label="Campaign ID" value={campaign.id} onChange={(e) => handleChange('id', e.target.value)}  sx={TextFieldStyle} />
+            <TextField fullWidth label="Campaign ID" 
+            helperText={`This will form the URL of your campaign - keep it short and snappy! Something like: "renthikeconsultation".`}
+            value={campaign.id} onChange={(e) => handleChange('id', e.target.value)}  sx={TextFieldStyle} />
 
           {edittingCampaign && edittingCampaignId !== campaign.id && (
             <p style={{margin: '-6px 0 8px 0', color: 'red', fontSize: 'small'}}>
@@ -227,21 +237,38 @@ export default function CampaignSetupForm({edittingCampaign}) {
             </p>
            )}
             
-            <TextField fullWidth label="Host" value={campaign.host} onChange={(e) => handleChange('host', e.target.value)}  sx={TextFieldStyle} />
-            <TextField fullWidth label="BCC" value={campaign.bcc} onChange={(e) => handleChange('bcc', e.target.value)} sx={TextFieldStyle} />
-            <TextField fullWidth label="Campaign Title" value={campaign.title} onChange={(e) => handleChange('title', e.target.value)}  sx={TextFieldStyle} />
-            <TextField fullWidth multiline rows={4} label="Blurb" value={campaign.blurb} onChange={(e) => handleChange('blurb', e.target.value)}  sx={TextFieldStyle} />
-            <TextField fullWidth label="Link" value={campaign.link} onChange={(e) => handleChange('link', e.target.value)}  sx={TextFieldStyle} />
+            <TextField fullWidth label="Host" 
+                        helperText="This can be just 'Living Rent', but if the campaign is being run by a specific branch, say so."
+            value={campaign.host} onChange={(e) => handleChange('host', e.target.value)}  sx={TextFieldStyle} />
+           
+           
+            <TextField fullWidth label="BCC" 
+                        helperText="Users will have the opportunity to BCC (blind copy) an email into their message to targets, so you can keep track of the messages sent. This should generally only be an @livingrent.org email address - not someone's personal one!"
+
+            value={campaign.bcc} onChange={(e) => handleChange('bcc', e.target.value)} sx={TextFieldStyle} />
+            <TextField fullWidth label="Campaign Title"
+                        helperText="This will be the headline on your campaign page - it should include a call to action, not just something descriptive."
+
+            value={campaign.title} onChange={(e) => handleChange('title', e.target.value)}  sx={TextFieldStyle} />
+            <TextField fullWidth multiline rows={4} label="Blurb"
+                        helperText="What's the elevator pitch for your campaign? Sum up why it's important in no more than a couple sentences."
+
+            value={campaign.blurb} onChange={(e) => handleChange('blurb', e.target.value)}  sx={TextFieldStyle} />
+            <TextField fullWidth label="Link" 
+                        helperText="Put a link to more information about the campaign, or even just your branch's social media page."
+            value={campaign.link} onChange={(e) => handleChange('link', e.target.value)}  sx={TextFieldStyle} />
           
             <FormControl
   fullWidth
   variant="outlined"         // ← make it outlined
   sx={TextFieldStyle}
+  
 >
   <InputLabel id="channel-label">Channel</InputLabel>
   <Select
     labelId="channel-label"  // ← must match the InputLabel id
     id="channel-select"
+
     label="Channel"
     value={campaign.channel}
     onChange={(e) => handleChange('channel', e.target.value)} // ← update channel
@@ -251,6 +278,9 @@ export default function CampaignSetupForm({edittingCampaign}) {
     <MenuItem value="phone">Phone</MenuItem>
   </Select>
   {campaign.channel == "phone" && <span style={{marginTop: '4px'}}><em>Phone campaigns are an experimental feature that are currently only compatible with custom targetting - we will add numbers for MSPs soon.</em></span>}
+  <FormHelperText>
+    Choose whether you are asking members to send emails, tweets, or phone calls.
+</FormHelperText>
 </FormControl>
             <FormControl fullWidth  sx={TextFieldStyle} >
   <InputLabel id="target-label">Target</InputLabel>
@@ -266,6 +296,9 @@ export default function CampaignSetupForm({edittingCampaign}) {
       </MenuItem>
     ))}
   </Select>
+  <FormHelperText>
+    Choose the target of your campaign. If you need something more complicated or an option that isn't here already, get in touch and we can add it.
+</FormHelperText>
 </FormControl>
             {campaign.target === 'custom' && (
               <Box sx={{ mb: 2 }}>
@@ -277,24 +310,24 @@ export default function CampaignSetupForm({edittingCampaign}) {
             )}
 
 <Box>
-      <Typography ><h2 style={{margin: '0'}}>FAQs (Optional)</h2></Typography>
+      <Typography ><p style={{margin: '0'}}><b>FAQs (Optional)</b>: if necessary, you can add some FAQs for your campaign - this might be helpful if it's a complicated or niche topic, or the target is someone unsuspected.</p></Typography>
       {campaign.accordion.map((faq, index) => (
         <Box key={index} sx={{ mb: 2 }}>
           <TextField
           sx={TextFieldStyle}
-          fullWidth label="FAQ Question" value={faq.q} onChange={(e) => handleFAQChange(index, 'q', e.target.value)}  />
+          fullWidth label={`Question ${index+1}`} value={faq.q} onChange={(e) => handleFAQChange(index, 'q', e.target.value)}  />
           <TextField
             fullWidth
             sx={TextFieldStyle}
 
             multiline
             rows={4}
-            label="FAQ Answer"
+            label={`Answer ${index+1}`}
             value={faq.a}
             onChange={(e) => handleFAQChange(index, 'a', e.target.value)}
           />
-          <Button 
-          sx={BtnStyleSmall}
+          You can add a link to the body of your answer using normal HTML, or using this button: <Button 
+          sx={{...BtnStyleSmall, padding: '3px 0 0 0'}}
           variant="text" size="small" onClick={() => { setEditingFaqIndex(index); setLinkModalOpen(true); }}>Add Link</Button>
         </Box>
       ))}
@@ -328,13 +361,26 @@ onClick={handleInsertLink}>Insert</Button>
 
         {activeStep === 1 && (
           <Box>
+
+            {campaign.channel !== "phone" && <p>"Prompts" are how users can personalise their messages. After users answer these prompt questions, their answers can be incorporated into the template message. This means striking a powerful balance of a campaign that is quick and easy for members to take part in, but also has a personal, human touch that makes it harder for decision makers to dismiss.<br/><br/>
+            Prompts can be either open text, or yes/no questions and then, when you are creating the template message, you can choose how and where to incorporate them into it.<br/><br/>
+            Prompts are <b>optional</b>, but you can add as many as you like.</p>}
             {campaign.channel == "phone" && <center><p><em>No need for prompts in phone campaigns</em></p></center>}
             {campaign.prompts.map((prompt, index) => (
               <Box key={index} sx={{ mb: 2 }}>
-                <TextField fullWidth label="Prompt ID" value={prompt.id || ''} onChange={(e) => handlePromptChange(index, 'id', e.target.value)}                     sx={TextFieldStyle}
+                <TextField 
+                helperText="Users won't see this - it's just for you to reference in the template"
+                fullWidth label="Prompt ID" value={prompt.id || ''} onChange={(e) => handlePromptChange(index, 'id', e.target.value)}                     sx={TextFieldStyle}
  />
-                <TextField fullWidth label="Question" value={prompt.question || ''} onChange={(e) => handlePromptChange(index, 'question', e.target.value)}                     sx={TextFieldStyle}
+                <TextField 
+                helperText=""
+                fullWidth label="Question" value={prompt.question || ''} onChange={(e) => handlePromptChange(index, 'question', e.target.value)}                     sx={TextFieldStyle}
  />
+
+ <Box sx={{display: 'flex', flexDirection: 'column'}}>
+               
+            
+                Answer type:
                 <RadioGroup
                 sx={RadioGroupStyle}
                   row
@@ -345,7 +391,8 @@ onClick={handleInsertLink}>Insert</Button>
                   
                   value="text" control={<Radio />} label="Text" />
                   <FormControlLabel value="yesno" control={<Radio />} label="Yes/No" />
-                </RadioGroup>
+                </RadioGroup> 
+
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -357,6 +404,8 @@ onClick={handleInsertLink}>Insert</Button>
                   }
                   label="Required"
                 />
+                </Box>
+                
               </Box>
             ))}
             <Button 
@@ -369,6 +418,12 @@ onClick={handleInsertLink}>Insert</Button>
 
         {activeStep === 2 && (
           <Box>
+
+            {campaign.channel !== "phone" && <p>
+              Here is where you write your template message. If you created prompts, you can insert them into the template to give the message a more personalised feel.<br/><br/>
+              Note that if your message doesn't start with "Dear" (such as "Dear MSPs,"), then the tool will insert the names of all recipients into the start of the template.<br/><br/>
+              For campaigns where the target is filtered based on the user's postcode (such as for MSPs), the tool will add the user's postcode to the end of the message so the recipient knows they are a constituent.
+              </p>}
                         {campaign.channel == "phone" && <center><p><em>For phone campaigns, instead of a template message, suggest key talking points for the call.</em></p></center>}
 
             <TextField
@@ -381,19 +436,23 @@ onClick={handleInsertLink}>Insert</Button>
               sx={TextFieldStyle}            />
 
             {campaign.prompts.length > 0 && <>
-            <Typography variant="h6">Insert Prompts</Typography>
+            <h4 style={{margin: '0'}}>Insert Prompts: </h4>
+<Box sx={{display: 'flex', marginTop: '5px'}}>
+
             {campaign.prompts.map((prompt, index) => (
-              <Box key={index}>
+              <Box key={index} sx={{margin: '0 3px'}}>
                 {prompt.answerType === 'yesno' ? (
                   <Button
-                  sx={BtnStyleSmall}
+                  sx={{...BtnStyleSmall, padding: '3px 0 0 0'}}
                   onClick={() => openYesNoModal(prompt)}>{prompt.id}</Button>
                 ) : (
-                  <Button           sx={BtnStyleSmall}
+                  <Button                         sx={{...BtnStyleSmall, padding: '3px 0 0 0'}}
+
                   onClick={() => insertPrompt(`<<${prompt.id}>>`)}>{prompt.id}</Button>
                 )}
               </Box>
-            ))}</>}
+            ))}</Box></>}
+
           </Box>
         )}
 
@@ -407,19 +466,34 @@ onClick={handleInsertLink}>Insert</Button>
               variant="outlined" onClick={() => setPreviewOpen(true)}>Preview</Button>
             )}
             <Button                         sx={{...BtnStyle, margin: '0 5px'}}
-onClick={handleNext}>{activeStep === steps.length - 1 ? 'Finish' : 'Next'}</Button>
+onClick={handleNext}>{activeStep === steps.length - 1 ? 'Publish' : 'Next'}</Button>
           </Box>
         </Box>
 
         <Dialog open={openModal} onClose={() => setOpenModal(false)}>
-          <DialogTitle>Insert Yes/No Prompt Text</DialogTitle>
-          <DialogContent>
-            <TextField fullWidth label="Yes Text" value={yesText} onChange={(e) => setYesText(e.target.value)}  sx={TextFieldStyle} />
-            <TextField fullWidth label="No Text" value={noText} onChange={(e) => setNoText(e.target.value)}  sx={TextFieldStyle}/>
+          <h2 style={{margin: "20px 0px 20px 20px"}}>Insert Yes/No Prompt Text</h2>
+
+    
+
+          <p style={{margin: "0 20px"}}>For yes/no prompts, you can show text in the template message conditionally, based on the user's answer. For example: if a user answers 'yes' to the question "Are you a current or former tenant of DJ Alexander?", it could show "As a tenant who's experienced your dodgy practices firsthand..."<br/><br/>
+          You do <b>not</b> need to give text for both conditions - it could only show if they say 'yes', for example.
+          <br/><br/>
+          <b>Question:</b> {currentPrompt?.question}</p>
+          <DialogContent sx={{paddingBottom: '0'}}>
+            <TextField fullWidth 
+            helperText={<>Say what should appear in the template message if the user answers <em>yes</em> to this prompt.</>}
+            label="Yes Text" value={yesText} onChange={(e) => setYesText(e.target.value)}  sx={TextFieldStyle} />
+            <TextField 
+                   
+                        helperText={<>Say what should appear in the template message if the user answers <em>no</em> to this prompt.</>}
+            fullWidth label="No Text" value={noText} onChange={(e) => setNoText(e.target.value)}  sx={TextFieldStyle}/>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpenModal(false)}>Cancel</Button>
-            <Button onClick={handleInsertYesNo}>Insert</Button>
+          <DialogActions sx={{display: 'flex', justifyContent: 'space-between', margin: '0 20px'}}>
+            <Button 
+            sx={BtnStyleSmall}
+            onClick={() => setOpenModal(false)}>Cancel</Button>
+            <Button             sx={BtnStyleSmall}
+ onClick={handleInsertYesNo}>Insert</Button>
           </DialogActions>
         </Dialog>
 
@@ -476,7 +550,8 @@ onClick={() => {
         </Dialog>
 
         <Modal open={previewOpen} onClose={() => setPreviewOpen(false)}>
-          <Box sx={{ p: 4, maxHeight: '90vh', overflow: 'auto', bgcolor: 'white', margin: '5vh auto', width: '90%' }}>
+          <Box sx={{ p: 4, maxHeight: '90vh', overflow: 'auto', bgcolor: "darkgrey", margin: '5vh auto', width: '90%', borderRadius: '10px', border: '1px solid black' }}>
+            <h1 style={{marginTop: '0'}}>Preview:</h1>
             <CampaignTopLevel testCampaign={campaign} />
           </Box>
         </Modal>

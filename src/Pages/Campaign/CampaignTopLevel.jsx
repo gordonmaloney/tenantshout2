@@ -28,9 +28,8 @@ const CampaignTopLevel = ({testCampaign}) => {
   
 
 		const { campaigns, loading } = useCampaigns();
-		const combinedCampaigns = [...ALL_CAMPAIGNS, ...campaigns]
 		const { campaignId } = useParams();
-		const campaign = testCampaign || combinedCampaigns.find((c) => c.campaignId === campaignId)?.campaign;
+		const campaign = testCampaign || campaigns.find((c) => c.campaignId === campaignId)?.campaign;
 
 	// Use 600px as the breakpoint for "sm" without needing the theme provider
 	const isSmallScreen = useMediaQuery("(max-width:600px)");
