@@ -43,7 +43,7 @@ export default function CampaignSetupForm({edittingCampaign}) {
   const [campaign, setCampaign] = useState({
     id: '',
     host: '',
-    channel: 'email',
+    channel: '',
     title: '',
     blurb: '',
     link: '',
@@ -212,6 +212,24 @@ export default function CampaignSetupForm({edittingCampaign}) {
             <TextField fullWidth label="Campaign Title" value={campaign.title} onChange={(e) => handleChange('title', e.target.value)}  sx={TextFieldStyle} />
             <TextField fullWidth multiline rows={4} label="Blurb" value={campaign.blurb} onChange={(e) => handleChange('blurb', e.target.value)}  sx={TextFieldStyle} />
             <TextField fullWidth label="Link" value={campaign.link} onChange={(e) => handleChange('link', e.target.value)}  sx={TextFieldStyle} />
+          
+            <FormControl
+  fullWidth
+  variant="outlined"         // ← make it outlined
+  sx={TextFieldStyle}
+>
+  <InputLabel id="channel-label">Channel</InputLabel>
+  <Select
+    labelId="channel-label"  // ← must match the InputLabel id
+    id="channel-select"
+    label="Channel"
+    value={campaign.channel}
+    onChange={(e) => handleChange('channel', e.target.value)} // ← update channel
+  >
+    <MenuItem value="email">Email</MenuItem>
+    <MenuItem value="twitter">Twitter/X</MenuItem>
+  </Select>
+</FormControl>
             <FormControl fullWidth  sx={TextFieldStyle} >
   <InputLabel id="target-label">Target</InputLabel>
   <Select

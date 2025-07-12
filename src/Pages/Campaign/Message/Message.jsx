@@ -70,13 +70,16 @@ const Message = ({
 
 		const [newTemplate, setNewTemplate] = useState(
 			`${campaign.template}${
-			  includePostcodeArray.includes(campaign.target) && postcode.trim()
+			  includePostcodeArray.includes(campaign.target) && campaign.channel == "email" && postcode.trim()
 				? `\n${postcode.trim().toUpperCase()}`
 				: ""
 			}`
 		  );
 
+
+
 	useEffect(() => {
+		if (campaign.channel == "email")  {
 		if (
 			messaging.length > 0 &&
 			newTemplate &&
@@ -92,6 +95,23 @@ const Message = ({
 			newTemplate &&
 			newTemplate.startsWith("Dear")
 		) {
+		}} else if (campaign.channel == "twitter") {
+			if (
+				messaging.length > 0 &&
+				newTemplate &&
+				!newTemplate.startsWith("Dear")
+			) {
+				setNewTemplate(
+					`Hi${messaging.map(
+						(recipient) => ` ` + recipient.handle
+					)},\n\n${newTemplate}`
+				);
+			} else if (
+				messaging.length > 0 &&
+				newTemplate &&
+				newTemplate.startsWith("Dear")
+			) {
+			}
 		}
 	}, [messaging]);
 

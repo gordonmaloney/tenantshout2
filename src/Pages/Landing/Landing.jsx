@@ -20,7 +20,7 @@ const GridStyle = {
 
 	width: "90%",
 	maxWidth: "600px",
-	padding: "10px 8px 12px 8px",
+	padding: "20px 20px 20px 20px",
 	backgroundColor: "rgba(246, 243, 246, 0.8)",
 	margin: "40px auto 0 auto",
 	
@@ -37,9 +37,13 @@ const Landing = () => {
 	return (
 		<div>
 			<div style={GridStyle} spacing={1} justifyContent="space-around">
-				<h2 style={{margin: '0px'}}>TenantAct</h2>
+				<h2 style={{marginTop: '0px'}}>TenantAct</h2>
 
-				<p>A platform for Living Rent members to run advocacy campaigns</p>
+				<p>
+
+A platform for Living Rent advocacy campaigns - contact the staff team to set up a campaign for your branch.
+
+				</p>
 			</div>
 		</div>
 	);

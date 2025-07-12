@@ -143,7 +143,7 @@ const Campaign = ({ campaign, stage, setStage, }) => {
 						setPrompts={setPrompts}
 					/>
 
-					<div key={prompt.id}>
+					<div key={prompt.id} style={{display: campaign.target == "email" ? 'inline-block' : 'none'}}>
 						<div className="email">Your email: </div>
 
 						<TextField

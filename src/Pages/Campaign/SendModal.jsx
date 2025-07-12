@@ -40,6 +40,11 @@ export const SendModal = ({
 	emailClient,
 }) => {
 	const generateLink = (forceMailto) => {
+
+		if (campaign.channel == "twitter") {
+			return
+		}
+
 		// 1) Build the to-list
 		const toList = messaging.map((t) => t.email).join(",");
 
@@ -72,6 +77,20 @@ export const SendModal = ({
 		// 5) return link
 		return sendLink;
 	};
+
+
+	const handleTwitterSend = () => {
+  const url =
+    "https://x.com/intent/post?text=" +
+    encodeURIComponent(newTemplate);
+
+  // open a 500×400 popup, no toolbar/menubar, but resizable & scrollable
+  window.open(
+    url,
+	'_blank',
+    "width=500,height=400,toolbar=0,menubar=0,location=0,resizable=1,scrollbars=1,status=0"
+  );
+	}
 
 	const [copied, setCopied] = useState(false);
 
@@ -158,7 +177,7 @@ export const SendModal = ({
 					<>
 						<p>
 							You're almost there. Press the button below to open your{" "}
-							{campaign.channel === "email" ? "email" : "Twitter"} client, and
+							{campaign.channel === "email" ? "email" : "Twitter/X"} client, and
 							the message will be pre-filled in there for you. Then just hit
 							send in there to fire it off.
 						</p>
@@ -167,7 +186,9 @@ export const SendModal = ({
 								href={generateLink()}
 								target="_blank"
 								rel="noopener noreferrer"
-								onClick={() => setSent(true)}
+								onClick={() => {setSent(true); if (campaign.channel=="twitter") handleTwitterSend()}}
+
+								
 								style={{ ...BtnStyle, marginTop: "5px" }}
 							>
 								Send{" "}
@@ -225,7 +246,7 @@ export const SendModal = ({
 						)}
 							*/}
 						<br />
-						<span style={{ fontSize: "12px" }}>
+						<span style={{ fontSize: "12px", display: campaign.channel !== 'twitter' ? "block" : "none"}}>
 							<em>
 								Not working?{" "}
 								<span onClick={() => setNoClient(true)}>
@@ -323,7 +344,7 @@ Need app ID or something
 							to copy the link and share it with your friends!
 						</p>
 
-						<span style={{ fontSize: "12px" }}>
+						<span style={{ fontSize: "12px", display: campaign.channel !== 'twitter' ? "block" : "none"}}>
 							<em>
 								Didn't work? If your email client didn't open, you can use{" "}
 								<span onClick={() => setNoClient(true)}>
