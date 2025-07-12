@@ -9,8 +9,9 @@ import {
 	Typography,
 	Box,
 	Button,
+	Grid
 } from "@mui/material";
-import { Grid2 as Grid } from "@mui/material";
+//import { Grid2 as Grid } from "@mui/material";
 import { ALL_CAMPAIGNS } from "../../Data/CampaignData";
 import { BtnStyle, BtnStyleSmall } from "../../MUIStyles";
 import { useCampaigns } from '../../CampaignContext';
@@ -38,7 +39,7 @@ const Landing = () => {
 		<div>
 
 
-			<div style={{...GridStyle, margin: '100px auto'}} spacing={1} justifyContent="space-around">
+			<div style={{...GridStyle, margin: '120px auto'}} spacing={1} justifyContent="space-around">
 
 
 			<Box sx={{ maxWidth: 600, mx: 'auto', backgroundColor: "white", padding: '20px', borderRadius: '10px' }}>
@@ -56,23 +57,23 @@ const Landing = () => {
 
 			</div>
 
-			<Grid container spacing={2} sx={{ width: '100vw', backgroundColor: 'white', padding: '20px 0', margin: '20px auto 80px auto' }} alignItems={"center"} justifyContent={"space-around"}>
-      {/* Left side: your image */}
-      <Grid item xs={0} md={3}    sx={{
-          display: { xs: 'none', md: 'block' },
-        }}>
-   <div style={{width: '100%'}}>
+			<Grid container  sx={{ width: '100%', backgroundColor: 'white', padding: '20px 0', margin: '20px auto 80px auto' }} alignItems={"center"} justifyContent={"space-around"}>
 
+      <Grid item xs={12} md={4} lg={6} spacing={2}   sx={{
+    display: { xs: 'none', md: 'block' },
+  }}>
+
+<center>
 	<img src={img6} 
-	style={{maxWidth: '460px', margin: '0 auto', borderRadius: '10px'}}
+	style={{width: "100%", maxWidth: "430px", margin: '0 auto', borderRadius: '10px'}}
 	alt="Living Rent members on May Day" />
-   </div>
+</center>
       </Grid>
 
-      {/* Right side: the slider */}
-      <Grid item xs={12} md={9}>
+      <Grid item xs={10} md={6} lg={6}>
         <FeaturedCampaigns />
       </Grid>
+
     </Grid>
 
 

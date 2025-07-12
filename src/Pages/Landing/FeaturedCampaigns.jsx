@@ -17,9 +17,7 @@ import { BtnStyleSmall, MobileStepperStyle, StepperStyle } from '../../MUIStyles
 
 const FEATURED_IDS = [
   'renthikes',
-  'landlordchris',
   'regctteetest',
-  'anotherCampaignId' // add your IDs here
 ];
 
 
@@ -64,7 +62,7 @@ export default function FeaturedCampaigns() {
   };
 
   return (
-    <Box sx={{ maxWidth: 600, flexGrow: 1, mx: 'auto' }}>
+    <Box sx={{ flexGrow: 1, mx: "auto", maxWidth: '500px' }}>
 
         <h2 style={{padding: '0 10px', margin: '0'}}>Featured campaigns:</h2>
       <SwipeableViews
