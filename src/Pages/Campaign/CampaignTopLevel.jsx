@@ -106,9 +106,7 @@ const CampaignTopLevel = ({testCampaign}) => {
 							<h3 style={{ margin: "0 0 10px 5px" }}>FAQs</h3>
 							<CampaignAccordion campaign={campaign} />
 						</Paper> }
-						<Button sx={{...BtnStyleSmall, position: 'fixed', left: '10px', bottom: '10px'}} color="secondary" onClick={handleOpen}>
-						Report a Bug
-					  </Button>
+		
 					  </>
 					)}
 				</Grid>
@@ -127,12 +125,12 @@ const CampaignTopLevel = ({testCampaign}) => {
 
 		
 							</Paper>}
+							
+							  </>
+						)}
 								<Button sx={{...BtnStyleSmall, float: 'right'}} color="secondary" onClick={handleOpen}>
 								Report a Bug
 							  </Button>
-							  </>
-						)}
-							
 				</Grid>
 				
 			</Grid>
