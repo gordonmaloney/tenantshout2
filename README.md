@@ -89,6 +89,10 @@ All top‑level views live under ``, organized by feature:
 
 - ## All targeting options and logic is in this one folder!!!
 
+
+
+#### Campaign
+
 - ## .Message/Message.jsx handles the logic for replacing the prompts in the user's message 
 - **CampaignTopLevel.jsx**: Wrapper for an individual campaign route. Reads `campaignId` from URL, loads the campaign via `useCampaigns`, and conditionally renders details or a “not found” message. Incorporates responsive layout and a “Report a Bug” dialog.
 - **Campaign.jsx**: Handles the multi‑stage user flow: collecting email and postcode, answering prompts (`Prompts.jsx`), and composing the final message (`Message/Message.jsx`). Detects user’s mail client automatically.
