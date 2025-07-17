@@ -3,6 +3,7 @@ export const BtnStyle = {
 	//textTransform: "none",
 	fontWeight: "800",
 	borderRadius: "10px",
+	padding: '8px 8px 4px 8px',
 	color: "var(--secondary-color)",
 	backgroundColor: "var(--button-color)",
 	border: "1px solid var(--button-color)",
@@ -18,12 +19,53 @@ export const BtnStyleSmall = {
 	//textTransform: "none",
 	fontWeight: "600",
 	borderRadius: "10px",
+	padding: '6px 6px 3px 6px',
 	color: "var(--secondary-color)",
 	backgroundColor: "var(--button-color)",
 	border: "1px solid var(--button-color)",
 	"&:hover, &:active": {
 		backgroundColor: "var(--secondary-color)",
 		color: "var(--button-color)",
+	},
+	"&:disabled": {
+		color: "var(--button-disabled-color)",
+		backgroundColor: "var(--button-disabled-background)",
+	},
+};
+
+export const BtnStyleCancel = {
+	fontSize: "medium",
+	//textTransform: "none",
+	fontWeight: "600",
+	borderRadius: "10px",
+	padding: '6px 6px 3px 6px',
+	color: "var(--secondary-color)",
+	backgroundColor: "var(--alert-color)",
+	border: "1px solid var(--box-outline)",
+	"&:hover, &:active": {
+		backgroundColor: "var(--secondary-color)",
+		color: "var(--alert-color)",
+		border: "1px solid var(--alert-color)",
+	},
+	"&:disabled": {
+		color: "var(--button-disabled-color)",
+		backgroundColor: "var(--button-disabled-background)",
+	},
+};
+
+
+export const BtnStyleSecondary = {
+	fontSize: "medium",
+	//textTransform: "none",
+	fontWeight: "600",
+	borderRadius: "10px",
+	padding: '6px 6px 3px 6px',
+	color: "var(--button-color)",
+	backgroundColor: "var(--secondary-color)",
+	border: "1px solid var(--button-color)",
+	"&:hover, &:active": {
+		backgroundColor: "var(--primary-color-semi-trans)",
+		color: "var(--secondary-color)",
 	},
 	"&:disabled": {
 		color: "var(--button-disabled-color)",

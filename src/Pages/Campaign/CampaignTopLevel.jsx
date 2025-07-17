@@ -16,6 +16,13 @@ import { useMediaQuery } from "@mui/material";
 import CampaignAccordion from "./CampaignAccordion";
 import { BtnStyle, BtnStyleSmall } from "../../MUIStyles";
 
+import {BarLoader} from 'react-spinners'
+
+
+
+
+
+
 const CampaignTopLevel = ({testCampaign}) => {
 	const [open, setOpen] = useState(false);
 	const [error, setError] = useState('');
@@ -37,7 +44,7 @@ const CampaignTopLevel = ({testCampaign}) => {
 
 
 	const GridStyle = {
-		//border: "1px solid grey",
+		border: "1px solid grey",
 		padding: "10px 8px 12px 8px",
 		backgroundColor: "var(--secondary-color)",
 		marginBottom: '20px',
@@ -45,10 +52,13 @@ const CampaignTopLevel = ({testCampaign}) => {
 
 	const [stage, setStage] = useState(0);
 
-	if (!campaign) {
+	if (!loading && !campaign) {
 		return <div>Campaign not found</div>;
 	}
 
+	if (loading) {
+		return <div style={{display: 'absolute', height: '100vh', width: '100vw', display: 'flex', justifyContent: 'center', alignItems: 'center'}}><BarLoader /></div> 
+	}
 
 
 	const handleGeneral = () => {
@@ -70,15 +80,16 @@ const CampaignTopLevel = ({testCampaign}) => {
 			}}
 		>
 			{isSmallScreen ? (
-				<h2
+				<h1
 					style={{
 						padding: "0px 6px",
 						margin: "20px 0 10px 0",
 						color: "var(--campaign-title)",
+						textAlign: 'center'
 					}}
 				>
 					{campaign.title}
-				</h2>
+				</h1>
 			) : (
 				<h1 style={{ padding: "0px 6px", color: "var(--campaign-title)" }}>
 					{campaign.title}
@@ -110,7 +121,7 @@ const CampaignTopLevel = ({testCampaign}) => {
 					)}
 				</Grid>
 				<Grid size={{ xs: 12, md: 8 }}>
-					<Paper sx={GridStyle}>
+					<Paper sx={{...GridStyle, padding: '14px'}}>
 						<Campaign campaign={campaign} stage={stage} setStage={setStage} />
 					
 					</Paper>

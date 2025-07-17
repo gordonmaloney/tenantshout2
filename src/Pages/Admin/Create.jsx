@@ -31,9 +31,11 @@ import { useCampaigns } from '../../CampaignContext';
 import { BtnStyleSmall, CheckBoxStyle, StepperStyle, TextFieldStyle, BtnStyle, RadioGroupStyle } from '../../MUIStyles';
 import { useNavigate } from "react-router";
 
-const steps = ['Overview', 'Prompts', 'Template Message'];
 
 export default function CampaignSetupForm({edittingCampaign}) {
+
+  const [steps, setSteps] = useState(['Overview', 'Prompts', 'Template Message'])
+
   const navigate = useNavigate();
 
       const { campaigns, loading, fetchCampaigns } = useCampaigns();
@@ -201,14 +203,16 @@ export default function CampaignSetupForm({edittingCampaign}) {
 
 
 
-  console.log(edittingCampaignId)
+  const [simpleMode, setSimpleMode] = useState(false)
+  useEffect(() => {
+    if (simpleMode) setSteps(['Overview', 'Template Message'])
 
+    if (!simpleMode) setSteps(['Overview', 'Prompts', 'Template Message'])
+  }, [simpleMode])
 
 
   return (
     <Box sx={{ width: '90%', margin: '20px auto', p: 4, bgcolor: 'white' }}>
-
-
       
       <Stepper activeStep={activeStep} sx={StepperStyle}>
         {steps.map((label) => (
@@ -218,7 +222,24 @@ export default function CampaignSetupForm({edittingCampaign}) {
         ))}
       </Stepper>
 
+
+
+
       <Box sx={{ mt: 4 }}>
+        <Grid container spacing={1}>
+          <Grid item lg={4} xs={12}>
+<div>
+  <h3 style={{margin: 0}}>Simple Mode</h3>
+  <p>In simple mode, all optional steps are removed - use this for a quick and easy set-up, with no message personalisation.</p>
+        <Button sx={BtnStyle} onClick={() => setSimpleMode(!simpleMode)}>Simple Mode {simpleMode ? "off" : "on"}</Button>
+
+        </div>
+</Grid>
+
+<Grid item lg={8} xs={12}>
+
+            
+
         {activeStep === 0 && (
           <Box>
             <TextField fullWidth label="Campaign ID" 
@@ -241,11 +262,11 @@ export default function CampaignSetupForm({edittingCampaign}) {
                         helperText="This can be just 'Living Rent', but if the campaign is being run by a specific branch, say so."
             value={campaign.host} onChange={(e) => handleChange('host', e.target.value)}  sx={TextFieldStyle} />
            
-           
+           {!simpleMode &&
             <TextField fullWidth label="BCC" 
                         helperText="Users will have the opportunity to BCC (blind copy) an email into their message to targets, so you can keep track of the messages sent. This should generally only be an @livingrent.org email address - not someone's personal one!"
 
-            value={campaign.bcc} onChange={(e) => handleChange('bcc', e.target.value)} sx={TextFieldStyle} />
+            value={campaign.bcc} onChange={(e) => handleChange('bcc', e.target.value)} sx={TextFieldStyle} />}
             <TextField fullWidth label="Campaign Title"
                         helperText="This will be the headline on your campaign page - it should include a call to action, not just something descriptive."
 
@@ -254,9 +275,12 @@ export default function CampaignSetupForm({edittingCampaign}) {
                         helperText="What's the elevator pitch for your campaign? Sum up why it's important in no more than a couple sentences."
 
             value={campaign.blurb} onChange={(e) => handleChange('blurb', e.target.value)}  sx={TextFieldStyle} />
+            
+            {!simpleMode &&
+
             <TextField fullWidth label="Link" 
                         helperText="Put a link to more information about the campaign, or even just your branch's social media page."
-            value={campaign.link} onChange={(e) => handleChange('link', e.target.value)}  sx={TextFieldStyle} />
+            value={campaign.link} onChange={(e) => handleChange('link', e.target.value)}  sx={TextFieldStyle} />}
           
             <FormControl
   fullWidth
@@ -309,6 +333,8 @@ export default function CampaignSetupForm({edittingCampaign}) {
               </Box>
             )}
 
+{!simpleMode &&
+
 <Box>
       <Typography ><p style={{margin: '0'}}><b>FAQs (Optional)</b>: if necessary, you can add some FAQs for your campaign - this might be helpful if it's a complicated or niche topic, or the target is someone unsuspected.</p></Typography>
       {campaign.accordion.map((faq, index) => (
@@ -355,11 +381,11 @@ export default function CampaignSetupForm({edittingCampaign}) {
 onClick={handleInsertLink}>Insert</Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box>}
           </Box>
         )}
 
-        {activeStep === 1 && (
+        {!simpleMode && activeStep === 1 && (
           <Box>
 
             {campaign.channel !== "phone" && <p>"Prompts" are how users can personalise their messages. After users answer these prompt questions, their answers can be incorporated into the template message. This means striking a powerful balance of a campaign that is quick and easy for members to take part in, but also has a personal, human touch that makes it harder for decision makers to dismiss.<br/><br/>
@@ -416,7 +442,7 @@ onClick={handleInsertLink}>Insert</Button>
           </Box>
         )}
 
-        {activeStep === 2 && (
+        {activeStep === 2 ||  (simpleMode && activeStep === 1) && (
           <Box>
 
             {campaign.channel !== "phone" && <p>
@@ -468,7 +494,12 @@ onClick={handleInsertLink}>Insert</Button>
             <Button                         sx={{...BtnStyle, margin: '0 5px'}}
 onClick={handleNext}>{activeStep === steps.length - 1 ? 'Publish' : 'Next'}</Button>
           </Box>
+
+          
         </Box>
+        </Grid>
+
+</Grid>
 
         <Dialog open={openModal} onClose={() => setOpenModal(false)}>
           <h2 style={{margin: "20px 0px 20px 20px"}}>Insert Yes/No Prompt Text</h2>

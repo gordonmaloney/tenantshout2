@@ -129,7 +129,7 @@ const Campaign = ({ campaign, stage, setStage, }) => {
 		<div>
 			{stage == 0 && (
 				<>
-					<h3 style={{ margin: "0 0 10px 0" }}>A few quick questions...</h3>
+					<h2 style={{ margin: "0 0 10px 0" }}>A few quick questions...</h2>
 
 					{campaign.target !== "custom" && (
 						<FetchTarget

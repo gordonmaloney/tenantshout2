@@ -2,9 +2,8 @@ import React from 'react'
 import { Grid2 as Grid } from "@mui/material";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXTwitter, faInstagram, faFacebookF } from '@fortawesome/free-brands-svg-icons';
-import {	Button, Box
+import { Box
 } from "@mui/material"
-import { Link } from "react-router-dom";
 
 
 const Footer = () => {

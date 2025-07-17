@@ -28,6 +28,27 @@ import { useDefaultTargetting } from "../../../TARGETING/useDefaultTargetting";
 import { useCustomTargetting } from "../../../TARGETING/useCustomTargetting";
 
 
+
+/**
+ * Message Component
+ *
+ * Renders the final message composition screen for a campaign, including:
+ * - Recipient selection chips
+ * - Subject line (if email)
+ * - Editable message body with prompt placeholders resolved
+ * - Send button / SendModal
+ *
+ * @param {Object} props
+ * @param {Object} props.campaign            Campaign configuration object
+ * @param {Array}  props.prompts             Array of prompt objects ({ id, answer, answerType })
+ * @param {Array}  props.adminDivisions      Admin division data - constituency, local authority ward etc, etc
+ * @param {string} props.postcode            User’s postcode (for email/council templates)
+ * @param {Function} props.setStage          Callback to move between stages
+ * @param {Function} props.emailClient       Detected email client (if any)
+ */
+
+
+
 const Message = ({
 	campaign,
 	prompts,
@@ -293,7 +314,7 @@ const Message = ({
 		return (
 			<>
 				Sorry - something has gone wrong while looking up your representative's
-				data. If you could let us know your postcode, we'll try to get it fixed!
+				data. This could be because you don't live in the campaign area, but if you think that is a mistake, let us know and we'll try to get it fixed!
 			</>
 		);
 	}

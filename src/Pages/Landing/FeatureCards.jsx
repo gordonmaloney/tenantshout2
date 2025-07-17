@@ -11,6 +11,7 @@ import img1 from './imgs/img1.jpeg'
 import img2 from './imgs/img2.jpeg'
 import img3 from './imgs/img3.jpeg'
 import img4 from './imgs/img4.jpeg'
+import GreenOverlayImage from '../../Components/ImgOverlay';
 
 const features = [
   {
@@ -37,11 +38,13 @@ export default function FeatureCards() {
       {features.map((feature, idx) => (
         <Grid item xs={12} sm={6} md={3} key={idx}>
           <Card sx={{ height: '100%', maxWidth: '260px', margin: '0 auto', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}>
-            <CardMedia
-              component="img"
-              image={feature.image}
-              alt={`Feature ${idx + 1}`}
-              sx={{ height: 170 }}
+
+
+            <GreenOverlayImage 
+            src={feature.image}
+            alt={feature.text}
+            border_radius={'10px'}
+            height={'170px'}
             />
             <CardContent sx={{ flexGrow: 1 }}>
                 <center>

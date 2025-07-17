@@ -27,6 +27,17 @@ const FetchTarget = ({
 
 
 
+	//handle postcode outside scotland for MSPs
+	
+
+	//handle outside Glasgow
+
+
+	//handle outside Edinburgh
+
+
+
+
 	// Fetch Scotland-specific data
 	const fetchScotlandData = async (trimmedPostcode) => {
 		const response = await fetch(
@@ -74,8 +85,8 @@ const FetchTarget = ({
 							scotland_data.result.scottish_parliamentary_constituency,
 					});
 				} else {
-					console.log(scotland_data.result.codes.scottish_parliamentary_constituency);
 
+					//this should be  fixed now
 					let code =
 						scotland_data.result.codes.scottish_parliamentary_constituency;
 					

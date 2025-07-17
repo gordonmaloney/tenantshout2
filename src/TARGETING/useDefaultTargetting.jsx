@@ -89,8 +89,11 @@ export function useDefaultTargetting(
 
 			setMessaging(data.filter((c) => c.ward == adminDivisions.ward));
 			setLoading(false)
+			if (data.filter((c) => c.ward == adminDivisions.ward).length == 0) {
+				setErrorMsg("Could not load councillors")
+			}
 		
-	}).catch((err) => console.error("Could not load councillors:", err));
+	}).catch((err) => setErrorMsg("Could not load councillors:", err));
 
 	return () => {
 		cancelled = true;

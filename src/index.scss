@@ -21,7 +21,6 @@ $box-outline-focus: var(--box-outline-focus);
 
 
 
-
 html, body {
     height: 100%;
     margin: 0;
@@ -72,6 +71,7 @@ body::before {
 h1, h2, h3, h4, h5, h6 {
     color: $primary-color;
     font-family: "Bebas Neue", sans-serif;
+      font-weight: 400;
 }
 
 button {

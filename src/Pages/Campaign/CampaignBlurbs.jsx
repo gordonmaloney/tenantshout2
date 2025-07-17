@@ -15,7 +15,7 @@ const CampaignBlurbs = ({ campaign, stage }) => {
 	};
 
 	useEffect(() => {
-		stage == 1 && setExpanded(false);
+		stage == 1 && setExpanded(true);
 	}, [stage]);
 
 	return (

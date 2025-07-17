@@ -18,6 +18,7 @@ import { useCampaigns } from '../../CampaignContext';
 import FeatureCards from "./FeatureCards";
 import FeaturedCampaigns from "./FeaturedCampaigns";
 import img6 from './imgs/img6.jpeg'
+import GreenOverlayImage from "../../Components/ImgOverlay";
 
 const GridStyle = {
 	//border: "1px solid grey",
@@ -45,7 +46,7 @@ const Landing = () => {
 			<Box sx={{ maxWidth: 600, mx: 'auto', backgroundColor: "white", padding: '20px', borderRadius: '10px' }}>
 
 				<center>
-			<h1>TenantAct</h1>
+			<h1>TenantShout</h1>
 			</center>
 
 			<center>A Living Rent platform for digital campaign actions - mobilise members to send emails, tweets, or phone calls to targets.
@@ -64,9 +65,12 @@ const Landing = () => {
   }}>
 
 <center>
-	<img src={img6} 
-	style={{width: "100%", maxWidth: "430px", margin: '0 auto', borderRadius: '10px'}}
-	alt="Living Rent members on May Day" />
+
+
+	
+	<GreenOverlayImage src={img6} alt="Living Rent members on May Day"
+	border_radius="10px" max_width="430px"
+	/>
 </center>
       </Grid>
 

@@ -14,6 +14,7 @@ import { styled } from '@mui/material/styles';
 import SwipeableViews from 'react-swipeable-views-react-18-fix';
 import { useCampaigns } from '../../CampaignContext';
 import { BtnStyleSmall, MobileStepperStyle, StepperStyle } from '../../MUIStyles';
+import {BarLoader} from 'react-spinners'
 
 const FEATURED_IDS = [
   'renthikes',
@@ -49,8 +50,8 @@ const StyledMobileStepper = styled(MobileStepper)(({ theme }) => ({
 
 
 export default function FeaturedCampaigns() {
-  const { campaigns } = useCampaigns();
-  const featured = campaigns.filter(c => FEATURED_IDS.includes(c.campaignId));
+  const { campaigns, loading } = useCampaigns();
+  const featured = campaigns?.filter(c => FEATURED_IDS.includes(c.campaignId));
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = featured.length;
 
@@ -60,6 +61,12 @@ export default function FeaturedCampaigns() {
   const handleBack = () => {
     setActiveStep(prev => (prev + maxSteps - 1) % maxSteps);
   };
+
+
+  if (loading) {
+    return <Box sx={{ flexGrow: 1, mx: "auto", maxWidth: '500px' }}><div style={{display: 'flex', justifyContent: 'center', alignContent: 'center'}}>
+    <BarLoader /></div></Box>
+  }
 
   return (
     <Box sx={{ flexGrow: 1, mx: "auto", maxWidth: '500px' }}>

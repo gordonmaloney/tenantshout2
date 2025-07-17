@@ -11,7 +11,7 @@ import {
   Typography
 } from '@mui/material';
 import { ENDPOINT } from '../../Endpoints';
-import { BtnStyleSmall, TextFieldStyle } from '../../MUIStyles';
+import { BtnStyleCancel, BtnStyleSecondary, BtnStyleSmall, TextFieldStyle } from '../../MUIStyles';
 
 /**
  * Button to delete a campaign with confirmation dialog.
@@ -55,7 +55,7 @@ export default function DeleteCampaignButton({ campaignId, onDeleted = () => {} 
 
   return (
     <>
-      <Button sx={BtnStyleSmall} onClick={handleOpen}>
+      <Button sx={BtnStyleCancel} onClick={handleOpen}>
         Delete
       </Button>
       <Dialog open={open} onClose={handleClose}>
@@ -77,8 +77,8 @@ export default function DeleteCampaignButton({ campaignId, onDeleted = () => {} 
           {error && <Typography color="error">{error}</Typography>}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} sx={BtnStyleSmall}>Cancel</Button>
-          <Button sx={{...BtnStyleSmall, backgroundColor: 'red'}} onClick={handleDelete}>Delete</Button>
+          <Button onClick={handleClose} sx={BtnStyleSecondary}>Cancel</Button>
+          <Button sx={BtnStyleCancel} onClick={handleDelete}>Delete</Button>
         </DialogActions>
       </Dialog>
     </>

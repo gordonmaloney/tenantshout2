@@ -1,70 +1,113 @@
-# Getting Started with Create React App
+# TenantShout2
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A responsive React application for the TenantShout platform, designed to streamline tenant communications and enhance engagement. Built with modern libraries and best practices for performance and maintainability.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Responsive Design:** Optimized for desktop and mobile devices
+- **Client-Side Routing:** Powered by React Router DOM for seamless navigation
+- **Styled with SCSS & Emotion:** Global styles via SCSS, component-scoped styles via Emotion CSS-in-JS
+- **UI Components:** Material-UI (MUI v6) and FontAwesome icons for a consistent, accessible interface
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Installation
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/gordonmaloney/tenantshout2.git
+   ```
+2. **Change into the project directory**
+   ```bash
+   cd tenantshout2
+   ```
+3. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-### `npm test`
+## Running Locally
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Start the development server:
 
-### `npm run build`
+```bash
+npm start
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The app will be available at `http://localhost:3000` and will reload on code changes.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Building for Production
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Create an optimized production build:
 
-### `npm run eject`
+```bash
+npm run build
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The compiled files will be output to the `build/` directory, ready for deployment.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Project Structure
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```
+tenantshout2/
+├── public/                   # Static files and HTML template
+│   └── index.html
+├── src/                      # Application source code
+│   ├── Components/           # Reusable UI components (see below)
+│   ├── Pages/                # Route-level components/views (see below)
+│   ├── App.js                # Root component and router setup
+│   ├── index.js              # Entry point
+│   ├── Endpoints.jsx         # API link
+│   └── index.scss            # Global SCSS styles
+├── .gitignore
+├── package.json
+└── README.md
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
+### Styling
+Using MUI, but with custom styling in src/MUIStyles.jsx
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Components
 
-### Code Splitting
+The `` directory contains shared UI building blocks:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- **Header.jsx**: Renders the site header with application title and an “ADMIN” button. Uses React Router’s `Link` and Material‑UI’s `Button` with the `BtnStyleSmall` style.
+- **Footer.jsx**: Displays Living Rent links and social media icons (Facebook, X/Twitter, Instagram) using FontAwesome icons, wrapped in a responsive MUI `Grid2` and `Box` layout.
 
-### Analyzing the Bundle Size
+### Pages
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+All top‑level views live under ``, organized by feature:
 
-### Making a Progressive Web App
+#### Landing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- **Landing.jsx**: The home page; displays a hero section inside an MUI `Paper`, with a call‑to‑action button linking to campaigns. Fetches campaign data via `useCampaigns` context.
+- **FeatureCards.jsx**: Renders a responsive grid of feature highlights using MUI `Card` and local images.
+- **FeaturedCampaigns.jsx**: Shows a swipeable carousel of featured campaigns using `react‑swipeable‑views` and a styled MUI `MobileStepper`.
 
-### Advanced Configuration
+#### TARGETING
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- ## All targeting options and logic is in this one folder!!!
 
-### Deployment
+- ## .Message/Message.jsx handles the logic for replacing the prompts in the user's message 
+- **CampaignTopLevel.jsx**: Wrapper for an individual campaign route. Reads `campaignId` from URL, loads the campaign via `useCampaigns`, and conditionally renders details or a “not found” message. Incorporates responsive layout and a “Report a Bug” dialog.
+- **Campaign.jsx**: Handles the multi‑stage user flow: collecting email and postcode, answering prompts (`Prompts.jsx`), and composing the final message (`Message/Message.jsx`). Detects user’s mail client automatically.
+- **CampaignBlurbs.jsx**: Displays the campaign blurb and host name with expand/collapse behavior for small screens.
+- **CampaignAccordion.jsx**: Renders an FAQ section using MUI `Accordion`, sanitizing HTML with DOMPurify and enabling smooth scroll to panels.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+#### Admin
 
-### `npm run build` fails to minify
+- **AdminLogin.jsx**: Login form for administrators. On success, stores JWT token in local storage.
+- **AdminDashboard.jsx**: Protected landing page for admins; lists existing campaigns and links to create or edit.
+- **Create.jsx**: Multi‑step campaign setup form (Overview, Prompts, Template). Posts new campaigns to the API via `ENDPOINT` and updates context.
+- **Edit.jsx**: Similar to **Create.jsx**, but pre‑loads an existing campaign for editing and sends PUT requests to update.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Technologies Used
+
+- **React** (v18)
+- **React Router DOM** (v6)
+- **Axios** (v1)
+- **Material-UI** (MUI v6) & **@emotion/react**, **@emotion/styled**
+- **FontAwesome** (v6)
+- **SCSS** (Sass)
+- **react-swipeable-views-react-18-fix**

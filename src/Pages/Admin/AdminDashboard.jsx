@@ -10,7 +10,7 @@ import {
 	Button,
 } from "@mui/material";
 import { Grid2 as Grid } from "@mui/material";
-import { BtnStyle, BtnStyleSmall } from "../../MUIStyles";
+import { BtnStyle, BtnStyleSecondary, BtnStyleSmall } from "../../MUIStyles";
 import { useCampaigns } from '../../CampaignContext';
 import AdminLogin from "./AdminLogin";
 import DeleteCampaignButton from "./DeleteCampaignButton";
@@ -108,7 +108,7 @@ return (
 								to={`/edit/${campaign.campaign.id}`}
 								style={{ textDecoration: "none", color: "inherit" }}
 							>
-										<Button sx={BtnStyleSmall}>Edit</Button></Link>
+										<Button sx={BtnStyleSecondary}>Edit</Button></Link>
 										
 										<DeleteCampaignButton campaignId={campaign.campaign.id} 
 										onDeleted={fetchCampaigns}
