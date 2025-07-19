@@ -1,3 +1,6 @@
+//This  is  to  construct  the send URL  based on the user's email client, so we can avoid using 'mailto' as much as possible
+
+
 export const webmailProviders = [
   {
     name: 'gmail',

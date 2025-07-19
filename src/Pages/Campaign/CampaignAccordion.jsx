@@ -9,6 +9,9 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DOMPurify from 'dompurify';
 
 
+//this is for the FAQ accordion for the campaign
+
+
 const CampaignAccordion = ({ campaign }) => {
 	const [expanded, setExpanded] = useState(false);
 

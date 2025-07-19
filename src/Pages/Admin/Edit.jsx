@@ -7,6 +7,8 @@ import { useCampaigns } from '../../CampaignContext';
 import Create from './Create'
 
 
+// This is the edit campaign page, which just loads the 'create' component pre-filled with the existing campaign,
+// and the truthy 'edittingCampaign' causes it to update rather than create a new one
 
 const Edit = () => {
 

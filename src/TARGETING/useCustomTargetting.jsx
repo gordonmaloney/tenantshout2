@@ -16,9 +16,16 @@ export function useCustomTargetting(
 	const setErrorMsg = externalSetErrorMsg || (() => {});
 
 
+
+	//checks what "customTargetting" value equals, and based on that assigns  something  to 'messaging' array
+
+
+
 	useEffect(() => {
 		if (!customTargetting) return;
 
+
+		//Edinburgh Regulatory Committee - 'edregcttee'
 		if (customTargetting == "edregcttee") {
 			setLoading(true);
 			setErrorMsg("");

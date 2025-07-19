@@ -10,6 +10,10 @@ import { BtnStyleSmall, TextFieldStyle } from "../../MUIStyles";
 
 import { webmailProviders } from "./webmailProviders";
 
+
+//this renders the prompts and then the actual template message
+
+
 const Campaign = ({ campaign, stage, setStage, }) => {
 	const [postcode, setPostcode] = useState("");
 

@@ -3,6 +3,8 @@ import { TextField, MenuItem } from "@mui/material";
 import { TextFieldStyle } from "../../MUIStyles";
 import FetchTarget from "./FetchTarget";
 
+//this component just _renders_ the prompt questions, it doesn't handle replacing the prompts in the message with the  user's answers
+
 const Prompts = ({ prompts, setPrompts }) => {
 	const handlePromptAnswerChange = (e, prompt) => {
 		setPrompts((prevPrompts) =>

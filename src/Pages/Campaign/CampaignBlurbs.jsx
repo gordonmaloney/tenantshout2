@@ -4,6 +4,9 @@ import LinkIcon from "@mui/icons-material/Link";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
+
+//render campaign blurbs
+
 const CampaignBlurbs = ({ campaign, stage }) => {
 	// Use 600px as the breakpoint for "sm" without needing the theme provider
 	const isSmallScreen = useMediaQuery("(max-width:600px)");

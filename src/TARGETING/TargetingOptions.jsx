@@ -1,3 +1,9 @@
+
+//This is where the drop-down is created when creating a new campaign
+
+
+//TODO - either remove the rule  part  from this  array or  make  it work properly idk
+
 export const TargetingOptions = [
     {
         name: 'MSPs',

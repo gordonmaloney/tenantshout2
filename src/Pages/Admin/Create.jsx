@@ -32,6 +32,15 @@ import { BtnStyleSmall, CheckBoxStyle, StepperStyle, TextFieldStyle, BtnStyle, R
 import { useNavigate } from "react-router";
 
 
+
+//This is the 'create' campaign page
+
+//TODO:
+// - make the textfields look better
+
+
+
+
 export default function CampaignSetupForm({edittingCampaign}) {
 
   const [steps, setSteps] = useState(['Overview', 'Prompts', 'Template Message'])
@@ -91,6 +100,8 @@ export default function CampaignSetupForm({edittingCampaign}) {
           campaign: { ...campaign },
         };
   
+
+        //create new campaign if NOT edittingCampaign
         if (!edittingCampaign) { 
         const response = await fetch(ENDPOINT + 'campaigns/', {
           method: 'POST',
@@ -106,6 +117,8 @@ export default function CampaignSetupForm({edittingCampaign}) {
           throw new Error('Failed to post campaign');
         }
       } else if (edittingCampaign) {
+
+        //update existing campaign if edittingCampaign
         const response = await fetch(ENDPOINT + 'campaigns/' + `${edittingCampaignId}`, {
           method: 'PUT',
           headers: {

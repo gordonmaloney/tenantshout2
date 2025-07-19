@@ -25,6 +25,12 @@ export function useDefaultTargetting(
 	const setNotMessaging = externalSetNotMessaging || _setNotMessaging;
 	const setErrorMsg = externalSetErrorMsg || _setErrorMsg;
 
+
+	//for MSPs,
+	//the postcode lookup API only returns constituency, 
+	//so we need to use this regions look up below to match the constituency to the region,
+	//and then get all MSPs that match either the constituency OR the region
+
 	// Fetch Regions
 	useEffect(() => {
 		if (campaign.target !== "msps") return;
@@ -72,7 +78,9 @@ export function useDefaultTargetting(
 
 
 
-	//Councillors 
+	//Councillors  -
+	//this checks which council it is and then dynamically fetches the URL from github
+	//if we add more councils, need to make sure it handles that too
 	useEffect(() => {
 		if (campaign.target !== "edinburgh" && campaign.target !=="glasgow") return;
 		setLoading(true);
@@ -132,7 +140,7 @@ export function useDefaultTargetting(
 		}, [campaign.target, adminDivisions.constituency]);
 
 
-	// Compute messaging / notMessaging
+	// Add to 'messaging' array all the targets
 	useEffect(() => {
 		if (campaign.customTargetting) return;
 		if (campaign.target !== "msps") return;

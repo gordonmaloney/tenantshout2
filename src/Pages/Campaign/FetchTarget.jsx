@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import { TextField } from "@mui/material";
 import { BtnStyle, TextFieldStyle } from "../../MUIStyles";
 
+
+//Take user's postcode  and set adminDivisions
+
+//this uses the postcodes.io API
+
 const FetchTarget = ({
 	campaign,
 	postcode,
@@ -26,14 +31,6 @@ const FetchTarget = ({
 	};
 
 
-
-	//handle postcode outside scotland for MSPs
-	
-
-	//handle outside Glasgow
-
-
-	//handle outside Edinburgh
 
 
 
