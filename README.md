@@ -65,19 +65,21 @@ tenantshout2/
 
 
 ### Styling
-Using MUI, but with custom styling in src/MUIStyles.jsx
+- Using MUI, but with custom styling in `src/MUIStyles.jsx`
+- `src/index.scss` for global styling
+- But also variables in `src/_variables.scss` for use elsewhere
 
 
 ### Components
 
-The `` directory contains shared UI building blocks:
+The `Components` directory contains shared UI building blocks:
 
-- **Header.jsx**: Renders the site header with application title and an “ADMIN” button. Uses React Router’s `Link` and Material‑UI’s `Button` with the `BtnStyleSmall` style.
+- **Header.jsx**: Renders the site header with application title and an “ADMIN” button.
 - **Footer.jsx**: Displays Living Rent links and social media icons (Facebook, X/Twitter, Instagram) using FontAwesome icons, wrapped in a responsive MUI `Grid2` and `Box` layout.
 
 ### Pages
 
-All top‑level views live under ``, organized by feature:
+All top‑level views live under `Pages`, organized by feature:
 
 #### Landing
 
