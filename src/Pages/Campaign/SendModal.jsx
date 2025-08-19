@@ -194,7 +194,7 @@ export const SendModal = ({
 								Send{" "}
 								{campaign.channel === "email"
 									? `email${
-											emailClient !== null && emailClient !== "mobile"
+											emailClient && emailClient !== "mobile"
 												? ` with ${emailClient}`
 												: ""
 									  }`
@@ -202,7 +202,7 @@ export const SendModal = ({
 							</Button>
 							{!Mobile &&
 								campaign.channel === "email" &&
-								emailClient !== null && (
+								emailClient && (
 									<div>
 										<Button
 											href={generateLink(true)}

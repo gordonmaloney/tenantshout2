@@ -16,9 +16,10 @@ import { useCampaigns } from '../../CampaignContext';
 import { BtnStyleSmall, MobileStepperStyle, StepperStyle } from '../../MUIStyles';
 import {BarLoader} from 'react-spinners'
 
+
 const FEATURED_IDS = [
   'renthikes',
-  'regctteetest',
+  'regcttee',
 ];
 
 
@@ -63,6 +64,8 @@ export default function FeaturedCampaigns() {
   };
 
 
+  console.log(campaigns)
+  
   if (loading) {
     return <Box sx={{ flexGrow: 1, mx: "auto", maxWidth: '500px' }}><div style={{display: 'flex', justifyContent: 'center', alignContent: 'center'}}>
     <BarLoader /></div></Box>

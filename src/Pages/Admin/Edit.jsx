@@ -14,7 +14,7 @@ const Edit = () => {
 
 
     const { campaigns, loading } = useCampaigns();
-        const combinedCampaigns = [...ALL_CAMPAIGNS, ...campaigns]
+        const combinedCampaigns = [...campaigns]
         const { campaignId } = useParams();
         const campaign =  combinedCampaigns.find((c) => c.campaignId === campaignId)?.campaign;
 

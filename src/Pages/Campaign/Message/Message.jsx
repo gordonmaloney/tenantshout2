@@ -80,7 +80,6 @@ const Message = ({
 		setErrorMsg,
 	});
 
-	console.log(errorMsg)
 
 
 	const promptsChanged = false;
@@ -302,8 +301,6 @@ const Message = ({
 	}, [campaign]);
 
 
-
-	console.log("messaging: " + messaging);
 
 
 	if (Loading) {
