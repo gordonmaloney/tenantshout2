@@ -66,12 +66,12 @@ export const SendModal = ({
 			);
 		} else {
 			// 4b) mailto: fallback
-			const params = new URLSearchParams();
-			if (newSubject) params.set("subject", newSubject);
-			if (newTemplate) params.set("body", newTemplate);
-			if (effectiveBcc) params.set("bcc", effectiveBcc);
+const query = [];
+if (newSubject) query.push(`subject=${encodeURIComponent(newSubject)}`);
+if (newTemplate) query.push(`body=${encodeURIComponent(newTemplate)}`);
+if (effectiveBcc) query.push(`bcc=${encodeURIComponent(effectiveBcc)}`);
 
-			sendLink = `mailto:${toList}?${params.toString()}`;
+sendLink = `mailto:${toList}${query.length ? "?" + query.join("&") : ""}`;
 		}
 
 		// 5) return link
