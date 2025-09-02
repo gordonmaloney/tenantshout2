@@ -47,7 +47,9 @@ const CampaignAccordion = ({ campaign }) => {
 						{item.q}
 					</AccordionSummary>
 					<AccordionDetails>
-					<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.a) }} />
+					<div 
+					style={{whiteSpace: 'pre-wrap'}}
+					dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.a) }} />
 					</AccordionDetails>
 				</Accordion>
 			))}
