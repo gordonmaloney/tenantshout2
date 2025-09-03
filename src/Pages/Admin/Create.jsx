@@ -122,6 +122,8 @@ export default function CampaignSetupForm({ edittingCampaign }) {
           }
         } else if (edittingCampaign) {
           //update existing campaign if edittingCampaign
+
+          console.log(edittingCampaignId)
           const response = await fetch(
             ENDPOINT + "campaigns/" + `${edittingCampaignId}`,
             {
