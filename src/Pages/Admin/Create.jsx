@@ -92,19 +92,18 @@ export default function CampaignSetupForm({ edittingCampaign }) {
     }
   }, [edittingCampaign]);
 
-  console.log(campaign);
 
   const token = localStorage.getItem("token");
 
   const handleNext = async () => {
     if (activeStep === steps.length - 1) {
       try {
-        const payload = {
-          campaignId: campaign.id,
+      const safeCampaignId = campaign.id.replace(/\s+/g, "_");
 
-
-          campaign: { ...campaign },
-        };
+      const payload = {
+        campaignId: safeCampaignId,
+        campaign: { ...campaign, id: safeCampaignId },
+      };
 
         //create new campaign if NOT edittingCampaign
         if (!edittingCampaign) {
@@ -145,7 +144,7 @@ export default function CampaignSetupForm({ edittingCampaign }) {
 
         fetchCampaigns();
         alert("Campaign successfully submitted!");
-        navigate(`../act/${campaign.id}`);
+        navigate(`../act/${safeCampaignId}`);
       } catch (error) {
         console.error("Submission error:", error);
         alert("There was an error submitting the campaign.");
