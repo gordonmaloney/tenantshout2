@@ -1,126 +1,156 @@
-import React, {useState} from "react";
+import React, { useState, useEffect } from "react";
 
 import { Paper } from "@mui/material";
 import { Link } from "react-router-dom";
 import {
-	Card,
-	CardContent,
-	CardActions,
-	Typography,
-	Button,
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  Button,
 } from "@mui/material";
 import { Grid2 as Grid } from "@mui/material";
 import { BtnStyle, BtnStyleSecondary, BtnStyleSmall } from "../../MUIStyles";
-import { useCampaigns } from '../../CampaignContext';
+import { useCampaigns } from "../../CampaignContext";
 import AdminLogin from "./AdminLogin";
 import DeleteCampaignButton from "./DeleteCampaignButton";
-
+import {
+  getFeaturedCampaigns,
+  updateFeaturedCampaigns,
+} from "./featuredCampaignsApi";
+import { useMemo } from "react";
+import FeaturedManager from "./FeaturedManager"
 const GridStyle = {
-	//border: "1px solid grey",
+  //border: "1px solid grey",
 
-	width: "100%",
-	maxWidth: "90vw",
-	padding: "10px 8px 12px 8px",
-	backgroundColor: "rgba(246, 243, 246, 0.8)",
-	margin: "40px auto 0 auto",
-	
+  width: "100%",
+  maxWidth: "90vw",
+  padding: "10px 8px 12px 8px",
+  backgroundColor: "rgba(246, 243, 246, 0.8)",
+  margin: "40px auto 0 auto",
 };
 
-
 const AdminDashboard = () => {
-	const { campaigns, loading, fetchCampaigns } = useCampaigns();
+  const { campaigns, loading, fetchCampaigns } = useCampaigns();
 
+  const formatDate = (isoString) => {
+    if (!isoString) return "";
+    const date = new Date(isoString);
+    const dd = String(date.getDate()).padStart(2, "0");
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const yy = String(date.getFullYear()).slice(-2);
 
+    const hh = String(date.getHours()).padStart(2, "0");
+    const min = String(date.getMinutes()).padStart(2, "0");
 
-	const formatDate = (isoString) => {
-		if (!isoString) return "";
-		const date = new Date(isoString);
-		const dd = String(date.getDate()).padStart(2, "0");
-		const mm = String(date.getMonth() + 1).padStart(2, "0");
-		const yy = String(date.getFullYear()).slice(-2);
+    return `${dd}/${mm}/${yy} - ${hh}:${min}`;
+  };
 
-		const hh = String(date.getHours()).padStart(2, "0");
-		const min = String(date.getMinutes()).padStart(2, "0");
+  const [featured, setFeatured] = useState([]);
 
+  useEffect(() => {
+    getFeaturedCampaigns().then(setFeatured).catch(console.error);
+  }, []);
 
-  return `${dd}/${mm}/${yy} - ${hh}:${min}`;
-	  };
+  const handleUpdate = async (newFeaturedCampaigns) => {
+    try {
+      const token = localStorage.getItem("token");
+      const updated = await updateFeaturedCampaigns(
+        newFeaturedCampaigns,
+        token
+      );
+      setFeatured(updated.featuredCampaigns);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
+  const test = () => {
+    handleUpdate(["68b728c4d7091defa2100f3f", "68c18b6562197f6462389a4a"]);
+  };
 
+  //test()
 
+  console.log(featured.featuredCampaigns);
 
-return (
+  return (
+    <div>
+      <Grid
+        container
+        style={GridStyle}
+        spacing={1}
+        justifyContent="space-around"
+      >
+        <Grid size={12}>
+          <center>
+            <Link to="../create">
+              <Button sx={{ ...BtnStyle, margin: "20px 0 30px 0" }}>
+                Create new Campaign
+              </Button>
+            </Link>
+          </center>
 
-		<div>
+    <FeaturedManager campaigns={campaigns} />
 
+          <h1 style={{ margin: 0, textAlign: "center" }}>Edit Campaigns:</h1>
+        </Grid>
+        {campaigns.map((campaign) => (
+          <Grid>
+            <Card
+              component="div"
+              key={campaign.campaign.id}
+              sx={{
+                display: "inline-block",
+                width: 270,
+                backgroundColor: "#F0F5FA",
+                //margin: "auto",
+                boxShadow: 3,
+                borderRadius: 2,
+                transition: "0.3s",
+                "&:hover": { boxShadow: 6 },
+              }}
+            >
+              <CardContent>
+                <h4 style={{ margin: 0 }}>{campaign.campaign.title}</h4>
+                <br />
+                {campaign.campaign.blurb}
+                <br />
+                <br />
+                <span>
+                  Last updated:{" "}
+                  {formatDate(campaign?.createdAt || campaign?.updatedAt)}{" "}
+                </span>{" "}
+                <br />
+                <br />
+                <div
+                  style={{ display: "flex", justifyContent: "space-around" }}
+                >
+                  <Link
+                    to={`/act/${campaign.campaign.id}`}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <Button sx={BtnStyleSmall}>View</Button>
+                  </Link>
 
+                  <Link
+                    to={`/edit/${campaign.campaign.id}`}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <Button sx={BtnStyleSecondary}>Edit</Button>
+                  </Link>
 
-
-			<Grid container style={GridStyle} spacing={1} justifyContent="space-around">
-
-				<Grid size={12}>
-
-
-<center>
-			<Link to="../create">
-			<Button sx={{...BtnStyle, margin: '20px 0 30px 0'}}>
-				Create new Campaign
-			</Button>
-			
-			</Link>
-			</center>
-	<h1 style={{margin: 0, textAlign: 'center'}}>Edit Campaigns:</h1>
-				</Grid>
-				{campaigns.map((campaign) => (
-					<Grid>
-						<Card
-							component="div"
-							key={campaign.campaign.id}
-							sx={{
-								display: "inline-block",
-								width: 270,
-								backgroundColor: "#F0F5FA",
-								//margin: "auto",
-								boxShadow: 3,
-								borderRadius: 2,
-								transition: "0.3s",
-								"&:hover": { boxShadow: 6 },
-							}}
-						>
-							
-								<CardContent>
-									<h4 style={{ margin: 0 }}>{campaign.campaign.title}</h4>
-									<br />
-									{campaign.campaign.blurb}
-									<br /><br/>
-									<span >Last updated: {formatDate(campaign?.createdAt || campaign?.updatedAt)}	</span>								<br />
-<br/>
-									<div
-									style={{display: 'flex', justifyContent: 'space-around'}}
-									>
-									<Link
-								to={`/act/${campaign.campaign.id}`}
-								style={{ textDecoration: "none", color: "inherit" }}
-							>
-										<Button sx={BtnStyleSmall}>View</Button></Link>
-										
-										<Link
-								to={`/edit/${campaign.campaign.id}`}
-								style={{ textDecoration: "none", color: "inherit" }}
-							>
-										<Button sx={BtnStyleSecondary}>Edit</Button></Link>
-										
-										<DeleteCampaignButton campaignId={campaign.campaign.id} 
-										onDeleted={fetchCampaigns}
-										/>
-										</div>
-								</CardContent>
-						</Card>
-					</Grid>
-				))}
-			</Grid>
-		</div>
-	);
+                  <DeleteCampaignButton
+                    campaignId={campaign.campaign.id}
+                    onDeleted={fetchCampaigns}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </div>
+  );
 };
 
 export default AdminDashboard;
