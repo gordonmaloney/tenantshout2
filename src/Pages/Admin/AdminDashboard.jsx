@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { Paper } from "@mui/material";
+import { Box, Paper } from "@mui/material";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -8,6 +8,12 @@ import {
   CardActions,
   Typography,
   Button,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
 } from "@mui/material";
 import { Grid2 as Grid } from "@mui/material";
 import { BtnStyle, BtnStyleSecondary, BtnStyleSmall } from "../../MUIStyles";
@@ -19,19 +25,23 @@ import {
   updateFeaturedCampaigns,
 } from "./featuredCampaignsApi";
 import { useMemo } from "react";
-import FeaturedManager from "./FeaturedManager"
+import FeaturedManager from "./FeaturedManager";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
+
 const GridStyle = {
   //border: "1px solid grey",
-
-  width: "100%",
-  maxWidth: "90vw",
-  padding: "10px 8px 12px 8px",
+  maxWidth: "80vw",
+  padding: "10px 28px 12px 28px",
   backgroundColor: "rgba(246, 243, 246, 0.8)",
   margin: "40px auto 0 auto",
 };
 
+const drawerWidth = 260;
+
 const AdminDashboard = () => {
   const { campaigns, loading, fetchCampaigns } = useCampaigns();
+  const [open, setOpen] = useState(true);
 
   const formatDate = (isoString) => {
     if (!isoString) return "";
@@ -74,28 +84,65 @@ const AdminDashboard = () => {
   console.log(featured.featuredCampaigns);
 
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "row" }}>
+      <Box
+        sx={{
+          width: drawerWidth,
+          backgroundColor: "white",
+          top: "0px",
+          height: "100vh",
+          paddingTop: "60px",
+          position: "fixed",
+          zIndex: "1",
+        }}
+      >
+        <List>
+          {[
+            { text: "Start new campaign", href: "#new" },
+            { text: "Manage featured campaigns", href: "#featured" },
+            { text: "Browse campaigns", href: "#campaigns" },
+          ].map((item) => (
+            <ListItem key={item.href} disablePadding>
+              <ListItemButton component="a" href={item.href}>
+                <ListItemText primary={item.text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+
       <Grid
         container
-        style={GridStyle}
+        style={{ ...GridStyle, marginLeft: 280 }}
         spacing={1}
         justifyContent="space-around"
       >
         <Grid size={12}>
-          <center>
+          <div id="new" style={{ width: "100%" }}>
+            <br />
+            <h1>Create new campaign</h1>
+            <p>Use this button to create a new campaign:</p>
             <Link to="../create">
               <Button sx={{ ...BtnStyle, margin: "20px 0 30px 0" }}>
                 Create new Campaign
               </Button>
             </Link>
-          </center>
+          </div>
 
-    <FeaturedManager campaigns={campaigns} />
+          <div id="featured">
+            <br />
 
-          <h1 style={{ margin: 0, textAlign: "center" }}>Edit Campaigns:</h1>
+            <FeaturedManager campaigns={campaigns} />
+          </div>
         </Grid>
+
+        <div id="campaigns" style={{ width: "100%" }}>
+          <h1>Edit Campaigns:</h1>
+
+          <p>Browse, edit and delete campaigns here</p>
+        </div>
         {campaigns.map((campaign) => (
-          <Grid>
+          <Grid item>
             <Card
               component="div"
               key={campaign.campaign.id}
@@ -123,7 +170,10 @@ const AdminDashboard = () => {
                 <br />
                 <br />
                 <div
-                  style={{ display: "flex", justifyContent: "space-around" }}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-around",
+                  }}
                 >
                   <Link
                     to={`/act/${campaign.campaign.id}`}

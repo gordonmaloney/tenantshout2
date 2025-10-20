@@ -86,6 +86,7 @@ button {
     display: flex;
     align-items: center;
     color: $primary-color;
+    z-index: 5
 }
 
 .editableDivBox:hover {

@@ -6,6 +6,22 @@ import {
   updateFeaturedCampaigns,
   getFeaturedCampaigns,
 } from "./featuredCampaignsApi"; // adjust path
+import {
+  Grid2 as Grid,
+  Box,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton,
+  Typography,
+} from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { BtnStyle, TextFieldStyle } from "../../MUIStyles";
 
 // helper: safely extract an ID from various shapes
 const getId = (x) => String(x?._id ?? x?.id ?? x?.campaignId ?? x);
@@ -77,43 +93,106 @@ export default function FeaturedManager({ campaigns = [] }) {
   };
 
   return (
-    <div>
-      <h1 style={{ margin: 0, textAlign: "center" }}>Featured Campaigns:</h1>
+    <>
+      <h1> Featured Campaigns</h1>
 
-      <ul>
-        {featuredObjects.map((camp) => {
-          const id = getId(camp);
-          return (
-            <li
-              key={id}
-              style={{ display: "flex", alignItems: "center", gap: 8 }}
-            >
-              <span>{camp?.campaignId || camp?.title || id}</span>
-              <button
-                onClick={() => handleRemove(id)}
-                style={{ marginLeft: "auto" }}
+<p>Chose which campaigns will feature on the home page:</p>
+
+      <Box
+        sx={{
+          maxWidth: 420,
+          border: "1px solid",
+          borderColor: "divider",
+          p: 2,
+          m: 2,
+          borderRadius: 2,
+        }}
+      >
+        <List dense sx={{ mt: 1 }}>
+          {featuredObjects.map((camp) => {
+            const id = getId(camp);
+            const primary = camp?.campaignId || camp?.title || id;
+            return (
+              <ListItem
+                key={id}
+                secondaryAction={
+                  <IconButton
+                    edge="end"
+                    aria-label="remove"
+                    onClick={() => handleRemove(id)}
+                    size="small"
+                  >
+                    <DeleteOutlineIcon />
+                  </IconButton>
+                }
               >
-                Remove
-              </button>
-            </li>
-          );
-        })}
-        {featuredObjects.length === 0 && <li>(none yet)</li>}
-      </ul>
+                <ListItemText primary={primary} />
+              </ListItem>
+            );
+          })}
+          {featuredObjects.length === 0 && (
+            <ListItem>
+              <ListItemText primary="(none yet)" />
+            </ListItem>
+          )}
+        </List>
 
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <select value={addingId} onChange={(e) => setAddingId(e.target.value)}>
-          <option value="">— Select a campaign to add —</option>
-          {addableCampaigns.map((c) => (
-            <option key={getId(c)} value={getId(c)}>
-              {c.campaignId || c.title || getId(c)}
-            </option>
-          ))}
-        </select>
-        <button onClick={handleAdd} disabled={!addingId}>
-          Add to featured
-        </button>
-      </div>
-    </div>
+        <Grid container spacing={1} alignItems="center">
+          <Grid size={{ xs: 12, sm: 8 }}>
+            <FormControl fullWidth size="small">
+              <Select
+                labelId="add-campaign-label"
+                id="add-campaign"
+                value={addingId}
+                sx={TextFieldStyle}
+                label="Add a campaign"
+                onChange={(e) => setAddingId(e.target.value)}
+                displayEmpty
+                renderValue={(val) =>
+                  val ? (
+                    addableCampaigns.find((c) => getId(c) === val)?.title ??
+                    addableCampaigns.find((c) => getId(c) === val)
+                      ?.campaignId ??
+                    val
+                  ) : (
+                    <span style={{ color: "rgba(0,0,0,0.6)" }}>
+                      — Select a campaign to add —
+                    </span>
+                  )
+                }
+              >
+                <MenuItem value="">
+                  <em>— Select a campaign to add —</em>
+                </MenuItem>
+                {addableCampaigns.map((c) => {
+                  const id = getId(c);
+                  const label = c.campaignId || c.title || id;
+                  return (
+                    <MenuItem key={id} value={id}>
+                      {label}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={handleAdd}
+              disabled={!addingId}
+              sx={{
+                ...BtnStyle,
+                color: addingId ? "white" : "grey !important",
+              }}
+            >
+              Add to featured
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+    </>
   );
 }

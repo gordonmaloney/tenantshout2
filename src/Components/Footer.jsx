@@ -9,7 +9,7 @@ import { Box
 const Footer = () => {
   return (
     <div
-    style={{backgroundColor: 'white', width: '100vw', marginTop: '50px'}}
+    style={{backgroundColor: 'white', width: '100vw', marginTop: '50px', zIndex: 5}}
     >
         <Grid container spacing={2} justifyContent={'space-between'}
         alignItems={"center"}
