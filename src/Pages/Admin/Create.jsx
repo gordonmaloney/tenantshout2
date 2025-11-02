@@ -16,6 +16,7 @@ import {
   FormHelperText,
   RadioGroup,
   FormControlLabel,
+  IconButton,
   Radio,
   Checkbox,
   MenuItem,
@@ -24,6 +25,7 @@ import {
   FormControl,
   Stack,
 } from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CampaignTopLevel from "../Campaign/CampaignTopLevel"; // Make sure this component exists
 import { ENDPOINT } from "../../Endpoints";
 import { TargetingOptions } from "../../TARGETING/TargetingOptions";
@@ -227,6 +229,35 @@ export default function CampaignSetupForm({ edittingCampaign }) {
 
     if (!simpleMode) setSteps(["Overview", "Prompts", "Template Message"]);
   }, [simpleMode]);
+
+
+//Subject Line logic
+const collapseIfSingle = (arr) => (arr.length === 1 ? arr[0] : arr);
+
+const subjects = Array.isArray(campaign.subject)
+  ? campaign.subject
+  : [campaign.subject || ""];
+
+const updateSubjectAt = (index, value) => {
+  const next = [...subjects];
+  next[index] = value;
+  // If all are empty, keep a single empty field
+  const trimmed = next.filter((s, i) => s !== "" || i === 0);
+  handleChange("subject", collapseIfSingle(trimmed));
+};
+
+const addSubject = () => {
+  const next = [...subjects, ""];
+  handleChange("subject", next); // keep as array while multiple
+};
+
+const removeSubjectAt = (index) => {
+  const next = subjects.filter((_, i) => i !== index);
+  handleChange("subject", next.length ? collapseIfSingle(next) : "");
+};
+
+
+
 
   return (
     <Box sx={{ width: "90%", margin: "20px auto", p: 4, bgcolor: "white" }}>
@@ -667,14 +698,53 @@ export default function CampaignSetupForm({ edittingCampaign }) {
                     </p>
                   </center>
                 )}
-                <TextField
-                  fullWidth
-                  multiline
-                  label="Subject line"
-                  value={campaign.subject}
-                  onChange={(e) => handleChange("subject", e.target.value)}
-                  sx={TextFieldStyle}
-                />
+
+                <Stack spacing={2} sx={{ marginBottom: "20px" }}>
+                  <Stack spacing={1.5}>
+                    {subjects.map((value, i) => (
+                      <Stack
+                        key={i}
+                        direction="row"
+                        spacing={1}
+                        alignItems="flex-start"
+                      >
+                        <TextField
+                          fullWidth
+                          multiline
+                          label={`Subject line${
+                            subjects.length > 1 ? ` ${i + 1}` : ""
+                          }`}
+                          value={value}
+                          onChange={(e) => updateSubjectAt(i, e.target.value)}
+                          sx={TextFieldStyle}
+                        />
+
+                        {subjects.length > 1 && (
+                          <IconButton
+                            aria-label="Remove subject line"
+                            onClick={() => removeSubjectAt(i)}
+                            sx={{ mt: 0.5 }}
+                          >
+                            <DeleteOutlineIcon />
+                          </IconButton>
+                        )}
+                      </Stack>
+                    ))}
+                  </Stack>
+
+                  <Button
+                    variant="outlined"
+                    sx={BtnStyleSmall}
+                    onClick={addSubject}
+                  >
+                    Add another subject line
+                  </Button>
+                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                    You can add multiple subject lines. When members send their
+                    email, one will be chosen at random - which makes it harder
+                    for recipients to filter or block them.
+                  </Typography>
+                </Stack>
 
                 <TextField
                   fullWidth

@@ -57,7 +57,23 @@ const Message = ({
   const [notMessaging, setNotMessaging] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const [newSubject, setNewSubject] = useState(campaign.subject);
+const [newSubject, setNewSubject] = useState(() => {
+  const subj = campaign.subject;
+
+  // Normalize to an array of non-empty strings
+  const subjects = Array.isArray(subj)
+    ? subj.filter((s) => typeof s === "string" && s.trim() !== "")
+    : typeof subj === "string" && subj.trim() !== ""
+    ? [subj]
+    : [];
+
+  if (subjects.length === 0) return "";
+
+  // Pick one at random
+  const randomIndex = Math.floor(Math.random() * subjects.length);
+  return subjects[randomIndex];
+});
+
 
   //SET TARGET via default hook
   useDefaultTargetting(campaign, adminDivisions, {
