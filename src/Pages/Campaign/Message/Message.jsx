@@ -334,6 +334,7 @@ const [newSubject, setNewSubject] = useState(() => {
     );
   }
 
+  console.log(campaign)
   return (
     <div>
       {campaign.channel == "email" && (
@@ -381,7 +382,7 @@ const [newSubject, setNewSubject] = useState(() => {
               {messaging.map((msp) => (
                 <Chip
                   label={`${msp.name} ${
-                    campaign.customTarget ? "" : ` - ${msp.party}`
+                    (campaign.customTarget && campaign.customTarget.length > 0) ? "" : ` - ${msp.party}`
                   }`}
                   variant="outlined"
                   sx={{ margin: "2px" }}
