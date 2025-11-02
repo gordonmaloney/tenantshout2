@@ -24,6 +24,12 @@ export const TargetingOptions = [
     rule: "function logic, or at least the function name or sth",
   },
   {
+    name: "Highlands Council",
+    value: "highland",
+    description: "Target the user's councillors, based on their postcode",
+    rule: "function logic, or at least the function name or sth",
+  },
+  {
     name: "MPs",
     value: "mps",
     description: "Target the user's MP, based on their postcode",

@@ -86,7 +86,7 @@ export function useDefaultTargetting(
   //this checks which council it is and then dynamically fetches the URL from github
   //if we add more councils, need to make sure it handles that too
   useEffect(() => {
-    if (campaign.target !== "edinburgh" && campaign.target !== "glasgow")
+    if (campaign.target !== "edinburgh" && campaign.target !== "glasgow" && campaign.target !== "highland")
       return;
     setLoading(true);
     let cancelled = false;
