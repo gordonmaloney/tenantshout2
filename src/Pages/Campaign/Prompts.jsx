@@ -43,6 +43,21 @@ const Prompts = ({ prompts, setPrompts }) => {
 								/>
 							)
 						}
+												{
+							//textfield for text type questions
+							prompt.answerType == "text-multiline" && (
+								<TextField
+									placeholder="Your answer here..."
+									sx={TextFieldStyle}
+									fullWidth
+									rows={3}
+									multiline
+									value={prompt.answer || ""}
+									required
+									onChange={(e) => handlePromptAnswerChange(e, prompt)}
+								/>
+							)
+						}
 						{
 							//select field for yes/no questions
 							prompt.answerType == "yesno" && (

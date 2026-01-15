@@ -165,6 +165,7 @@ export default function CampaignSetupForm({ edittingCampaign }) {
   };
 
   const handlePromptChange = (index, field, value) => {
+    console.log(value)
     const updated = [...campaign.prompts];
     updated[index][field] = value;
     setCampaign({ ...campaign, prompts: updated });
@@ -624,6 +625,11 @@ const removeSubjectAt = (index) => {
                           value="yesno"
                           control={<Radio />}
                           label="Yes/No"
+                        />
+                            <FormControlLabel
+                          value="text-multiline"
+                          control={<Radio />}
+                          label="Multiline text"
                         />
                       </RadioGroup>
                       <FormControlLabel
