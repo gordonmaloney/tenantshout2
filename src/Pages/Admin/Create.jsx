@@ -94,18 +94,17 @@ export default function CampaignSetupForm({ edittingCampaign }) {
     }
   }, [edittingCampaign]);
 
-
   const token = localStorage.getItem("token");
 
   const handleNext = async () => {
     if (activeStep === steps.length - 1) {
       try {
-      const safeCampaignId = campaign.id.replace(/\s+/g, "_");
+        const safeCampaignId = campaign.id.replace(/\s+/g, "_");
 
-      const payload = {
-        campaignId: safeCampaignId,
-        campaign: { ...campaign, id: safeCampaignId },
-      };
+        const payload = {
+          campaignId: safeCampaignId,
+          campaign: { ...campaign, id: safeCampaignId },
+        };
 
         //create new campaign if NOT edittingCampaign
         if (!edittingCampaign) {
@@ -125,7 +124,7 @@ export default function CampaignSetupForm({ edittingCampaign }) {
         } else if (edittingCampaign) {
           //update existing campaign if edittingCampaign
 
-          console.log(edittingCampaignId)
+          console.log(edittingCampaignId);
           const response = await fetch(
             ENDPOINT + "campaigns/" + `${edittingCampaignId}`,
             {
@@ -135,7 +134,7 @@ export default function CampaignSetupForm({ edittingCampaign }) {
                 Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify(payload),
-            }
+            },
           );
           if (!response.ok) {
             const errorText = await response.text();
@@ -165,7 +164,7 @@ export default function CampaignSetupForm({ edittingCampaign }) {
   };
 
   const handlePromptChange = (index, field, value) => {
-    console.log(value)
+    console.log(value);
     const updated = [...campaign.prompts];
     updated[index][field] = value;
     setCampaign({ ...campaign, prompts: updated });
@@ -231,34 +230,30 @@ export default function CampaignSetupForm({ edittingCampaign }) {
     if (!simpleMode) setSteps(["Overview", "Prompts", "Template Message"]);
   }, [simpleMode]);
 
+  //Subject Line logic
+  const collapseIfSingle = (arr) => (arr.length === 1 ? arr[0] : arr);
 
-//Subject Line logic
-const collapseIfSingle = (arr) => (arr.length === 1 ? arr[0] : arr);
+  const subjects = Array.isArray(campaign.subject)
+    ? campaign.subject
+    : [campaign.subject || ""];
 
-const subjects = Array.isArray(campaign.subject)
-  ? campaign.subject
-  : [campaign.subject || ""];
+  const updateSubjectAt = (index, value) => {
+    const next = [...subjects];
+    next[index] = value;
+    // If all are empty, keep a single empty field
+    const trimmed = next.filter((s, i) => s !== "" || i === 0);
+    handleChange("subject", collapseIfSingle(trimmed));
+  };
 
-const updateSubjectAt = (index, value) => {
-  const next = [...subjects];
-  next[index] = value;
-  // If all are empty, keep a single empty field
-  const trimmed = next.filter((s, i) => s !== "" || i === 0);
-  handleChange("subject", collapseIfSingle(trimmed));
-};
+  const addSubject = () => {
+    const next = [...subjects, ""];
+    handleChange("subject", next); // keep as array while multiple
+  };
 
-const addSubject = () => {
-  const next = [...subjects, ""];
-  handleChange("subject", next); // keep as array while multiple
-};
-
-const removeSubjectAt = (index) => {
-  const next = subjects.filter((_, i) => i !== index);
-  handleChange("subject", next.length ? collapseIfSingle(next) : "");
-};
-
-
-
+  const removeSubjectAt = (index) => {
+    const next = subjects.filter((_, i) => i !== index);
+    handleChange("subject", next.length ? collapseIfSingle(next) : "");
+  };
 
   return (
     <Box sx={{ width: "90%", margin: "20px auto", p: 4, bgcolor: "white" }}>
@@ -273,6 +268,24 @@ const removeSubjectAt = (index) => {
       <Box sx={{ mt: 4 }}>
         <Grid container spacing={1}>
           <Grid item lg={4} xs={12}>
+            <div>
+              <h3 style={{ margin: 0 }}>New Campaign Template</h3>
+
+              <p>
+                Use{" "}
+                <a
+                  href="https://docs.google.com/document/d/1RvbPVU6kMyCWN8CGTSOV0vBWCzuBf9G-KEuXgShPaH0/edit?tab=t.0"
+                  target="_blank"
+                >
+                  this doc
+                </a>{" "}
+                to help get started with your campaign. By drafting your
+                campaign in there, it will be easier to get input and
+                suggestions, and to make sure you have done everything right
+                (and don't end up with any legal risks!).
+              </p>
+            </div>
+
             <div>
               <h3 style={{ margin: 0 }}>Simple Mode</h3>
               <p>
@@ -339,7 +352,7 @@ const removeSubjectAt = (index) => {
                   <TextField
                     fullWidth
                     label="BCC"
-                    helperText="Users will have the opportunity to BCC (blind copy) an email into their message to targets, so you can keep track of the messages sent. This should generally only be an @livingrent.org email address - not someone's personal one!"
+                    helperText="Users will have the opportunity to BCC (blind copy) an email into their message to targets, so you can keep track of the messages sent. This should only ever be an @livingrent.org email address - not someone's personal one, and not an external one!"
                     value={campaign.bcc}
                     onChange={(e) => handleChange("bcc", e.target.value)}
                     sx={TextFieldStyle}
@@ -612,7 +625,7 @@ const removeSubjectAt = (index) => {
                           handlePromptChange(
                             index,
                             "answerType",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                       >
@@ -626,7 +639,7 @@ const removeSubjectAt = (index) => {
                           control={<Radio />}
                           label="Yes/No"
                         />
-                            <FormControlLabel
+                        <FormControlLabel
                           value="text-multiline"
                           control={<Radio />}
                           label="Multiline text"
@@ -641,7 +654,7 @@ const removeSubjectAt = (index) => {
                               handlePromptChange(
                                 index,
                                 "required",
-                                e.target.checked
+                                e.target.checked,
                               )
                             }
                           />

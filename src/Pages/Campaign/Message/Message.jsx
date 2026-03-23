@@ -387,7 +387,9 @@ const [newSubject, setNewSubject] = useState(() => {
               {messaging.map((msp) => (
                 <Chip
                   label={`${msp.name} ${
-                    (campaign.customTarget && campaign.customTarget.length > 0) ? "" : ` - ${msp.party}`
+                    campaign.customTarget && campaign.customTarget.length > 0
+                      ? ""
+                      : ` - ${msp.party}`
                   }`}
                   variant="outlined"
                   sx={{ margin: "2px" }}
@@ -396,8 +398,8 @@ const [newSubject, setNewSubject] = useState(() => {
                       ? () => {
                           setMessaging((prev) =>
                             prev.filter(
-                              (prevTarget) => prevTarget.name !== msp.name
-                            )
+                              (prevTarget) => prevTarget.name !== msp.name,
+                            ),
                           );
                           setNotMessaging((prev) => [...prev, msp]);
                         }
@@ -408,8 +410,8 @@ const [newSubject, setNewSubject] = useState(() => {
                       ? () => {
                           setMessaging((prev) =>
                             prev.filter(
-                              (prevTarget) => prevTarget.name !== msp.name
-                            )
+                              (prevTarget) => prevTarget.name !== msp.name,
+                            ),
                           );
                           setNotMessaging((prev) => [...prev, msp]);
                         }
@@ -487,16 +489,16 @@ const [newSubject, setNewSubject] = useState(() => {
                           onDelete={() => {
                             setNotMessaging((prev) =>
                               prev.filter(
-                                (prevTarget) => prevTarget.name !== msp.name
-                              )
+                                (prevTarget) => prevTarget.name !== msp.name,
+                              ),
                             );
                             setMessaging((prev) => [...prev, msp]);
                           }}
                           onClick={() => {
                             setNotMessaging((prev) =>
                               prev.filter(
-                                (prevTarget) => prevTarget.name !== msp.name
-                              )
+                                (prevTarget) => prevTarget.name !== msp.name,
+                              ),
                             );
                             setMessaging((prev) => [...prev, msp]);
                           }}
@@ -577,7 +579,16 @@ const [newSubject, setNewSubject] = useState(() => {
             }}
           >
             Tick here to copy in <b>{campaign.host}</b> to your email if you are
-            happy to share your contact details and message with them.
+            happy to share your contact details and message with them. We aim to
+            delete this information after 12 months but you can ask us to delete
+            it sooner at any time by emailing privacy@livingrent.org.{" "}
+            <a
+              href="https://www.livingrent.org/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Privacy Policy
+            </a>
           </p>
         }
       />
