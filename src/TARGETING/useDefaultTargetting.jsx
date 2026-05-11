@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+const DATA_BASE = "https://scotland-constituencies.netlify.app/reps/";
+
 export function useDefaultTargetting(
   campaign,
   adminDivisions,
@@ -8,7 +10,7 @@ export function useDefaultTargetting(
     setMessaging: externalSetMessaging,
     setNotMessaging: externalSetNotMessaging,
     setErrorMsg: externalSetErrorMsg,
-  } = {}
+  } = {},
 ) {
   // internal defaults if parent doesn't supply
   const [loadingState, _setLoading] = useState(true);
@@ -24,24 +26,20 @@ export function useDefaultTargetting(
   const setNotMessaging = externalSetNotMessaging || _setNotMessaging;
   const setErrorMsg = externalSetErrorMsg || _setErrorMsg;
 
-  //for MSPs,
-  //the postcode lookup API only returns constituency,
-  //so we need to use this regions look up below to match the constituency to the region,
-  //and then get all MSPs that match either the constituency OR the region
-
+  /*
   // Fetch Regions
+  // Temporarily commented out while migrating to postcode lookup data
   useEffect(() => {
     if (
       campaign.target !== "msps" &&
       campaign.target !== "cllrs-msps-ben-siobhan"
     )
       return;
+
     let cancelled = false;
     setLoading(true);
 
-    fetch(
-      "https://raw.githubusercontent.com/gordonmaloney/rep-data/main/REGIONS.json"
-    )
+    fetch(`${DATA_BASE}/REGIONS.json`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch regions");
         return res.json();
@@ -55,6 +53,7 @@ export function useDefaultTargetting(
       cancelled = true;
     };
   }, [campaign.target]);
+  */
 
   // Fetch MSPs
   useEffect(() => {
@@ -63,11 +62,10 @@ export function useDefaultTargetting(
       campaign.target !== "cllrs-msps-ben-siobhan"
     )
       return;
+
     let cancelled = false;
 
-    fetch(
-      "https://raw.githubusercontent.com/gordonmaloney/rep-data/main/MSPs.json"
-    )
+    fetch(`${DATA_BASE}/MSPs.json`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch MSPs");
         return res.json();
@@ -82,65 +80,81 @@ export function useDefaultTargetting(
     };
   }, [campaign.target]);
 
-  //Councillors  -
-  //this checks which council it is and then dynamically fetches the URL from github
-  //if we add more councils, need to make sure it handles that too
+  // Councillors
   useEffect(() => {
-    if (campaign.target !== "edinburgh" && campaign.target !== "glasgow" && campaign.target !== "highland")
+    if (
+      campaign.target !== "edinburgh" &&
+      campaign.target !== "glasgow" &&
+      campaign.target !== "highland"
+    )
       return;
+
     setLoading(true);
     let cancelled = false;
 
-    fetch(
-      `https://raw.githubusercontent.com/gordonmaloney/rep-data/main/${campaign.target}-councillors.json`
-    )
+    fetch(`${DATA_BASE}/${campaign.target}-councillors.json`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch councillors");
         return res.json();
       })
       .then((data) => {
-        setMessaging(data.filter((c) => c.ward == adminDivisions.ward));
+        if (cancelled) return;
+
+        const councillorsForWard = data.filter(
+          (c) => c.ward == adminDivisions.ward,
+        );
+
+        setMessaging(councillorsForWard);
         setLoading(false);
-        if (data.filter((c) => c.ward == adminDivisions.ward).length == 0) {
+
+        if (councillorsForWard.length == 0) {
           setErrorMsg("Could not load councillors");
         }
       })
-      .catch((err) => setErrorMsg("Could not load councillors:", err));
+      .catch((err) => {
+        console.error("Could not load councillors:", err);
+        setErrorMsg("Could not load councillors");
+        setLoading(false);
+      });
 
     return () => {
       cancelled = true;
     };
   }, [campaign.target, adminDivisions.ward]);
 
-  //MPs
+  // MPs
   useEffect(() => {
     if (campaign.target !== "mps") return;
+
     setLoading(true);
     let cancelled = false;
 
-    fetch(
-      `https://raw.githubusercontent.com/gordonmaloney/rep-data/main/MPs.json`
-    )
+    fetch(`${DATA_BASE}/MPs.json`)
       .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch councillors");
+        if (!res.ok) throw new Error("Failed to fetch MPs");
         return res.json();
       })
       .then((data) => {
+        if (cancelled) return;
+
         setMessaging(
-          data.filter((c) => c.constituency == adminDivisions.constituency)
+          data.filter((c) => c.constituency == adminDivisions.constituency),
         );
         setLoading(false);
       })
-      .catch((err) => console.error("Could not load MPs:", err));
+      .catch((err) => {
+        console.error("Could not load MPs:", err);
+        setErrorMsg("Could not load MPs");
+        setLoading(false);
+      });
 
     return () => {
       cancelled = true;
     };
   }, [campaign.target, adminDivisions.constituency]);
 
-  // add to messaging for ben/siobhan
+  // Add to messaging for Ben/Siobhian
   useEffect(() => {
-
     if (campaign.customTargetting) return;
     if (campaign.target !== "cllrs-msps-ben-siobhan") return;
 
@@ -160,14 +174,17 @@ export function useDefaultTargetting(
         email: "siobhian.brown.msp@parliament.scot",
       },
     ];
-    // missing constituency
+
     if (!adminDivisions.scotConstituency) {
       setErrorMsg("No Scottish Constituency found...");
       setLoading(false);
       return;
     }
 
-    // wait for fetches
+    /*
+    // OLD REGION LOOKUP LOGIC
+    // Temporarily disabled while migrating to adminDivisions.scotRegion
+
     if (regions.length === 0 || msps.length === 0) return;
 
     const constituency = adminDivisions.scotConstituency;
@@ -180,27 +197,37 @@ export function useDefaultTargetting(
     }
 
     const regionName = regionObj.region;
+    */
+
+    if (msps.length === 0) return;
+
+    const constituency = adminDivisions.scotConstituency;
+    const regionName = adminDivisions.scotRegion;
+
+    if (!regionName) {
+      setErrorMsg("No Scottish Parliamentary Region found...");
+      setLoading(false);
+      return;
+    }
+
     const inTarget = msps.filter(
       (msp) =>
-        msp.constituency === constituency || msp.constituency === regionName
+        msp.constituency === constituency || msp.constituency === regionName,
     );
 
-    // Add extraAdditions if not already present
     extraAdditions.forEach((extra) => {
       const alreadyIncluded = inTarget.some(
         (msp) =>
           msp.name === extra.name ||
-          msp.email?.toLowerCase() === extra.email?.toLowerCase()
+          msp.email?.toLowerCase() === extra.email?.toLowerCase(),
       );
-      if (alreadyIncluded) {
-      } else {
+
+      if (!alreadyIncluded) {
         inTarget.push(extra);
       }
     });
 
-    fetch(
-      "https://raw.githubusercontent.com/gordonmaloney/rep-data/main/edinburgh-councillors.json"
-    )
+    fetch(`${DATA_BASE}/edinburgh-councillors.json`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch councillors");
         return res.json();
@@ -215,12 +242,11 @@ export function useDefaultTargetting(
             const wardInFile = String(c.ward ?? "")
               .trim()
               .toLowerCase();
+
             return wardInFile === wardFromAdmin;
-          }
+          },
         );
 
-
-        // MERGE (not two args!) + DEDUPE
         const key = (p) => p?.email?.toLowerCase?.() || `name:${p?.name}`;
         const mergedMap = new Map();
 
@@ -231,7 +257,7 @@ export function useDefaultTargetting(
 
         const merged = Array.from(mergedMap.values());
 
-        setMessaging(merged); // <-- single merged array
+        setMessaging(merged);
         setLoading(false);
 
         if (councillorsForWard.length === 0) {
@@ -241,33 +267,34 @@ export function useDefaultTargetting(
         }
       })
       .catch((err) => {
-        console.error("💥 Could not load councillors", err);
+        console.error("Could not load councillors", err);
         setErrorMsg("Could not load councillors.");
         setLoading(false);
       });
-
-    setErrorMsg("");
   }, [
     campaign.target,
+    campaign.customTargetting,
     adminDivisions.scotConstituency,
+    adminDivisions.scotRegion,
     adminDivisions.ward,
-    regions,
     msps,
   ]);
 
-  // Add to 'messaging' array all the targets for MSPs
+  // Add to messaging array all the targets for MSPs
   useEffect(() => {
     if (campaign.customTargetting) return;
     if (campaign.target !== "msps") return;
 
-    // missing constituency
     if (!adminDivisions.scotConstituency) {
       setErrorMsg("No Scottish Constituency found...");
       setLoading(false);
       return;
     }
 
-    // wait for fetches
+    /*
+    // OLD REGION LOOKUP LOGIC
+    // Temporarily disabled while migrating to adminDivisions.scotRegion
+
     if (regions.length === 0 || msps.length === 0) return;
 
     const constituency = adminDivisions.scotConstituency;
@@ -280,16 +307,34 @@ export function useDefaultTargetting(
     }
 
     const regionName = regionObj.region;
+    */
+
+    if (msps.length === 0) return;
+
+    const constituency = adminDivisions.scotConstituency;
+    const regionName = adminDivisions.scotRegion;
+
+    if (!regionName) {
+      setErrorMsg("No Scottish Parliamentary Region found...");
+      setLoading(false);
+      return;
+    }
+
     const inTarget = msps.filter(
       (msp) =>
-        msp.constituency === constituency || msp.constituency === regionName
+        msp.constituency === constituency || msp.constituency === regionName,
     );
 
     setMessaging(inTarget);
     setErrorMsg("");
     setLoading(false);
-  }, [campaign.target, adminDivisions.scotConstituency, regions, msps]);
+  }, [
+    campaign.target,
+    campaign.customTargetting,
+    adminDivisions.scotConstituency,
+    adminDivisions.scotRegion,
+    msps,
+  ]);
 
-  // return raw data arrays; state values are managed by parent if setters passed
   return { regions, msps };
 }
