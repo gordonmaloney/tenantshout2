@@ -58,7 +58,7 @@ const CampaignTopLevel = ({testCampaign}) => {
 	}
 
 	if (loading) {
-		return <div style={{display: 'absolute', height: '100vh', width: '100vw', display: 'flex', justifyContent: 'center', alignItems: 'center'}}><BarLoader /></div> 
+		return <div style={{position: 'absolute', height: '100vh', width: '100vw', display: 'flex', justifyContent: 'center', alignItems: 'center'}}><BarLoader /></div> 
 	}
 
 

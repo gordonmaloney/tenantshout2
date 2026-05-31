@@ -30,10 +30,10 @@ A responsive React application for the TenantShout platform, designed to streaml
 Start the development server:
 
 ```bash
-npm start
+npm run dev
 ```
 
-The app will be available at `http://localhost:3000` and will reload on code changes.
+The app will be available at `http://localhost:5173` by default and will reload on code changes.
 
 ## Building for Production
 
@@ -43,7 +43,7 @@ Create an optimized production build:
 npm run build
 ```
 
-The compiled files will be output to the `build/` directory, ready for deployment.
+The compiled files will be output to the `dist/` directory, ready for deployment.
 
 ## Project Structure
 
@@ -54,8 +54,8 @@ tenantshout2/
 ├── src/                      # Application source code
 │   ├── Components/           # Reusable UI components (see below)
 │   ├── Pages/                # Route-level components/views (see below)
-│   ├── App.js                # Root component and router setup
-│   ├── index.js              # Entry point
+│   ├── App.jsx               # Root component and router setup
+│   ├── main.jsx              # Entry point
 │   ├── Endpoints.jsx         # API link
 │   └── index.scss            # Global SCSS styles
 ├── .gitignore
