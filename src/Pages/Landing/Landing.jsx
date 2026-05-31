@@ -1,98 +1,175 @@
 import React from "react";
-
-import { Paper } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { Link } from "react-router-dom";
-import {
-	Card,
-	CardContent,
-	CardActions,
-	Typography,
-	Box,
-	Button,
-	Grid
-} from "@mui/material";
-//import { Grid2 as Grid } from "@mui/material";
-import { ALL_CAMPAIGNS } from "../../Data/CampaignData";
-import { BtnStyle, BtnStyleSmall } from "../../MUIStyles";
-import { useCampaigns } from '../../CampaignContext';
+import { BtnStyle, BtnStyleSecondary } from "../../MUIStyles";
 import FeatureCards from "./FeatureCards";
 import FeaturedCampaigns from "./FeaturedCampaigns";
-import img6 from './imgs/img6.jpeg'
+import img6 from "./imgs/img6.jpeg";
 import GreenOverlayImage from "../../Components/ImgOverlay";
 
-const GridStyle = {
-	//border: "1px solid grey",
-
-	width: "90%",
-	maxWidth: "600px",
-margin: '50px auto 0 auto',
-	
-};
-
-
 const Landing = () => {
-	const { campaigns, loading } = useCampaigns();
+  return (
+    <Box
+      component="div"
+      sx={{
+        backgroundColor: "rgb(3, 55, 27)",
+        display: "flex",
+        flexDirection: "column",
+        flexGrow: 1,
+        overflow: "hidden",
+      }}
+    >
+      <Box
+        component="section"
+        sx={{
+          minHeight: { xs: "520px", md: "560px" },
+          display: "flex",
+          alignItems: "center",
+          position: "relative",
+          width: "100%",
+          boxSizing: "border-box",
+          px: { xs: 2.5, sm: 4, md: 8 },
+          py: { xs: 6, md: 8 },
+        }}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(90deg, rgba(3, 55, 27, 0.92) 0%, rgba(9, 124, 53, 0.78) 52%, rgba(9, 124, 53, 0.55) 100%)",
+            zIndex: 1,
+          }}
+        />
+        <Box
+          component="img"
+          src={img6}
+          alt=""
+          aria-hidden="true"
+          sx={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            filter: "grayscale(25%) contrast(110%)",
+          }}
+        />
 
+        <Box
+          sx={{
+            position: "relative",
+            zIndex: 2,
+            width: "100%",
+            maxWidth: { xs: "340px", sm: "680px" },
+            minWidth: 0,
+            color: "white",
+          }}
+        >
+          <h1
+            style={{
+              color: "white",
+              fontSize: "clamp(3.4rem, 8vw, 6.8rem)",
+              lineHeight: 0.92,
+              margin: "0 0 20px",
+              overflowWrap: "break-word",
+            }}
+          >
+            TenantShout
+          </h1>
+          <h2
+            style={{
+              color: "white",
+              fontSize: "clamp(1.55rem, 3vw, 2.4rem)",
+              lineHeight: 1,
+              margin: "0 0 18px",
+              maxWidth: "100%",
+              overflowWrap: "break-word",
+            }}
+          >
+            Campaign tools for tenant power
+          </h2>
+          <p style={{ fontSize: "1.12rem", lineHeight: 1.55, maxWidth: 570, margin: "0 0 28px", overflowWrap: "break-word" }}>
+            Mobilise members to email, tweet and call key targets together.
+          </p>
+          <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
+            <a href="#featured" style={{ textDecoration: "none" }}>
+              <Button sx={{ ...BtnStyle, backgroundColor: "var(--surface-color)", color: "var(--primary-color)" }}>
+                Take action
+              </Button>
+            </a>
+            <Link to="./login" style={{ textDecoration: "none" }}>
+              <Button sx={{ ...BtnStyleSecondary, backgroundColor: "transparent", color: "white", borderColor: "white" }}>
+                Admin login
+              </Button>
+            </Link>
+          </Box>
+        </Box>
+      </Box>
 
+      <Box
+        id="featured"
+        component="section"
+        sx={{
+          backgroundColor: "var(--surface-color)",
+          width: "100%",
+          boxSizing: "border-box",
+          px: { xs: 2, sm: 4, md: 8 },
+          py: { xs: 5, md: 7 },
+        }}
+      >
+        <Box
+          sx={{
+            maxWidth: "1120px",
+            mx: "auto",
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            alignItems: "center",
+            justifyContent: "center",
+            gap: { xs: 4, md: 7 },
+            width: "100%",
+            minWidth: 0,
+          }}
+        >
+          <Box sx={{ width: { xs: "100%", md: "42%" }, minWidth: 0 }}>
+            <Box sx={{ display: { xs: "none", md: "block" } }}>
+              <GreenOverlayImage
+                src={img6}
+                alt="Living Rent members at a demonstration"
+                border_radius="8px"
+                height="340px"
+              />
+            </Box>
+            <Box sx={{ display: { xs: "block", md: "none" }, width: "100%", maxWidth: "358px", minWidth: 0 }}>
+              <h2 style={{ margin: "0 0 8px" }}>Tenant power, one action at a time</h2>
+              <p style={{ margin: 0, lineHeight: 1.55, overflowWrap: "break-word" }}>
+                Fast, focused campaign tools for moments when members move together.
+              </p>
+            </Box>
+          </Box>
+          <Box sx={{ width: { xs: "100%", md: "58%" }, minWidth: 0 }}>
+            <FeaturedCampaigns />
+          </Box>
+        </Box>
+      </Box>
 
-
-	return (
-		<div>
-
-
-			<div style={{...GridStyle, margin: '120px auto'}} spacing={1} justifyContent="space-around">
-
-
-			<Box sx={{ maxWidth: 600, mx: 'auto', backgroundColor: "white", padding: '20px', borderRadius: '10px' }}>
-
-				<center>
-			<h1>TenantShout</h1>
-			</center>
-
-			<center>A Living Rent platform for digital campaign actions - mobilise members to send emails, tweets, or phone calls to targets.
-<br/><br/>
-<Link to="./login">
-<Button sx={BtnStyle}>Get started</Button></Link>
-</center>
-</Box>
-
-			</div>
-
-			<Grid container  sx={{ width: '100%', backgroundColor: 'white', padding: '20px 0', margin: '20px auto 80px auto' }} alignItems={"center"} justifyContent={"space-around"}>
-
-      <Grid item xs={12} md={4} lg={6} spacing={2}   sx={{
-    display: { xs: 'none', md: 'block' },
-  }}>
-
-<center>
-
-
-	
-	<GreenOverlayImage src={img6} alt="Living Rent members on May Day"
-	border_radius="10px" max_width="430px"
-	/>
-</center>
-      </Grid>
-
-      <Grid item xs={10} md={6} lg={6}>
-        <FeaturedCampaigns />
-      </Grid>
-
-    </Grid>
-
-
-
-<div style={{width: '95%', maxWidth: '1000px', margin: '0 auto'}}>
-			<FeatureCards />
-			</div>
-
-
-
-
-
-
-		</div>
-	);
+      <Box
+        component="section"
+        sx={{
+          px: { xs: 2, sm: 4, md: 8 },
+          py: { xs: 5, md: 7 },
+          width: "100%",
+          boxSizing: "border-box",
+          backgroundColor: "rgb(3, 55, 27)",
+          flexGrow: 1,
+        }}
+      >
+        <Box sx={{ maxWidth: "1000px", mx: "auto" }}>
+          <FeatureCards />
+        </Box>
+      </Box>
+    </Box>
+  );
 };
 
 export default Landing;

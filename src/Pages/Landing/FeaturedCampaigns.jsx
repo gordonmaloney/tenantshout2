@@ -7,24 +7,17 @@ import {
   CardContent,
   Typography,
   MobileStepper,
+  Chip,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import { getFeaturedCampaigns } from "../Admin/featuredCampaignsApi";
 
-import SwipeableViews from "react-swipeable-views-react-18-fix";
-import { useCampaigns } from "../../CampaignContext";
-import {
-  BtnStyleSmall,
-  MobileStepperStyle,
-  StepperStyle,
-} from "../../MUIStyles";
+import { BtnStyleSmall } from "../../MUIStyles";
 import { BarLoader } from "react-spinners";
 
-const FEATURED_IDS = ["renthikes", "regcttee"];
-
 const StyledMobileStepper = styled(MobileStepper)(({ theme }) => ({
-  backgroundColor: "white",
+  backgroundColor: "var(--surface-color)",
   padding: 0,
 
   // Dots container
@@ -50,31 +43,32 @@ const StyledMobileStepper = styled(MobileStepper)(({ theme }) => ({
 }));
 
 export default function FeaturedCampaigns() {
-  const { campaigns, loading } = useCampaigns();
   const [activeStep, setActiveStep] = useState(0);
+  const [featured, setFeatured] = useState({ featuredCampaigns: [] });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getFeaturedCampaigns()
+      .then((data) => setFeatured(data || { featuredCampaigns: [] }))
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const featuredCampaigns = featured?.featuredCampaigns || [];
+  const maxSteps = featuredCampaigns.length;
 
   const handleNext = () => {
+    if (!maxSteps) return;
     setActiveStep((prev) => (prev + 1) % maxSteps);
   };
   const handleBack = () => {
+    if (!maxSteps) return;
     setActiveStep((prev) => (prev + maxSteps - 1) % maxSteps);
   };
 
-  const [featured, setFeatured] = useState([]);
-
-  useEffect(() => {
-    getFeaturedCampaigns().then(setFeatured).catch(console.error);
-  }, []);
-
-
-    console.log(featured);
-
-
-  const maxSteps = featured?.featuredCampaigns?.length;
-
   if (loading) {
     return (
-      <Box sx={{ flexGrow: 1, mx: "auto", maxWidth: "500px" }}>
+      <Box sx={{ flexGrow: 1, mx: { xs: 0, sm: "auto" }, maxWidth: { xs: "358px", sm: "520px" }, width: "100%", py: 6 }}>
         <div
           style={{
             display: "flex",
@@ -88,57 +82,80 @@ export default function FeaturedCampaigns() {
     );
   }
 
+  if (!maxSteps) {
+    return (
+      <Box sx={{ flexGrow: 1, mx: { xs: 0, sm: "auto" }, maxWidth: { xs: "358px", sm: "520px" }, width: "100%" }}>
+        <h2 style={{ margin: "0 0 14px" }}>Current actions</h2>
+        <Card className="featuredCard" sx={{ borderRadius: 1 }}>
+          <CardContent>
+            <Typography>No featured campaigns are live right now.</Typography>
+          </CardContent>
+        </Card>
+      </Box>
+    );
+  }
+
+  const activeCampaign = featuredCampaigns[activeStep]?.campaign;
 
   return (
-    <Box sx={{ flexGrow: 1, mx: "auto", maxWidth: "500px" }}>
-      <h2 style={{ padding: "0 10px", margin: "0" }}>Featured campaigns:</h2>
-      <SwipeableViews
-        index={activeStep}
-        onChangeIndex={setActiveStep}
-        enableMouseEvents
+    <Box sx={{ flexGrow: 1, mx: { xs: 0, sm: "auto" }, maxWidth: { xs: "358px", sm: "520px" }, width: "100%" }}>
+      <h2 style={{ margin: "0 0 14px" }}>Current actions</h2>
+      <Card
+        className="featuredCard"
+        sx={{
+          width: "100%",
+          boxSizing: "border-box",
+          borderRadius: 1,
+          boxShadow: "0 10px 24px rgba(0, 0, 0, 0.08)",
+          backgroundColor: "rgba(255, 255, 255, 0.52)",
+          backdropFilter: "blur(8px)",
+        }}
       >
-        {featured?.featuredCampaigns?.map((c, idx) => (
-          <Box key={c.campaignId} sx={{ p: 2 }}>
-            <Card
-              className="featuredCard"
-              sx={{ maxWidth: "350px", margin: "0 auto" }}
-            >
-              <CardContent>
-                <Typography gutterBottom>
-                  <center>
-                    <h3 style={{ margin: "0 auto" }}> {c.campaign.title}</h3>
-                  </center>
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    display: "-webkit-box",
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    WebkitLineClamp: 6, // 👈 max 5 lines
-                  }}
-                >
-                  {c.campaign.blurb}
-                </Typography>
-
-                <center>
-                  <Link
-                    to={`/act/${c.campaign.id}`}
-                    style={{ textDecoration: "none", color: "inherit" }}
-                  >
-                    <Button sx={BtnStyleSmall}>Take action</Button>
-                  </Link>
-                </center>
-              </CardContent>
-            </Card>
+        <CardContent sx={{ p: { xs: 2.25, sm: 3 } }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", gap: 1, mb: 1.5 }}>
+            <h3 style={{ margin: 0 }}>{activeCampaign.title}</h3>
+            {activeCampaign.channel && (
+              <Chip
+                label={activeCampaign.channel}
+                size="small"
+                sx={{
+                  borderRadius: "4px",
+                  color: "var(--primary-color)",
+                  borderColor: "var(--primary-color)",
+                  textTransform: "capitalize",
+                }}
+                variant="outlined"
+              />
+            )}
           </Box>
-        ))}
-      </SwipeableViews>
+          <Typography
+            variant="body2"
+            sx={{
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              WebkitLineClamp: 5,
+              lineHeight: 1.55,
+            }}
+          >
+            {activeCampaign.blurb}
+          </Typography>
+
+          <Box sx={{ mt: 2.25 }}>
+            <Link
+              to={`/act/${activeCampaign.id}`}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <Button sx={BtnStyleSmall}>Take action</Button>
+            </Link>
+          </Box>
+        </CardContent>
+      </Card>
 
       <StyledMobileStepper
         variant="dots"
-        steps={maxSteps}
+        steps={Math.max(maxSteps, 1)}
         position="static"
         activeStep={activeStep}
         nextButton={

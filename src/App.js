@@ -1,17 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import CampaignTopLevel from './Pages/Campaign/CampaignTopLevel';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from "./Components/Header";
 import Landing from "./Pages/Landing/Landing";
-import CreateCampaign from './Pages/Admin/Create';
-import Edit from './Pages/Admin/Edit';
-import AdminDashboard from './Pages/Admin/AdminDashboard';
-import AdminLogin from './Pages/Admin/AdminLogin';
 import { CampaignProvider } from './CampaignContext';
 import { ENDPOINT } from './Endpoints';
 import ProtectedRoute from './ProtectedRoute';
 import Footer from './Components/Footer';
 import {Box} from '@mui/material'
+
+const CampaignTopLevel = lazy(() => import('./Pages/Campaign/CampaignTopLevel'));
+const CreateCampaign = lazy(() => import('./Pages/Admin/Create'));
+const Edit = lazy(() => import('./Pages/Admin/Edit'));
+const AdminDashboard = lazy(() => import('./Pages/Admin/AdminDashboard'));
+const AdminLogin = lazy(() => import('./Pages/Admin/AdminLogin'));
+
+const LoadingFallback = () => (
+  <Box
+    sx={{
+      minHeight: '50vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'white',
+      fontWeight: 700,
+    }}
+  >
+    Loading...
+  </Box>
+);
+
+const WithCampaigns = ({ children }) => (
+  <CampaignProvider>{children}</CampaignProvider>
+);
+
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -37,7 +58,6 @@ function App() {
   }
 
   return (
-    <CampaignProvider>
    <Box
         sx={{
           display: 'flex',
@@ -48,11 +68,12 @@ function App() {
       >        <Router>
           <Header />
 
-             <Box component="main" sx={{ flexGrow: 1 }}>
+             <Box component="main" sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
 
+          <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/act/:campaignId" element={<CampaignTopLevel />} />
+            <Route path="/act/:campaignId" element={<WithCampaigns><CampaignTopLevel /></WithCampaigns>} />
 
 
 			<Route path="/login"   element={<AdminLogin onLogin={() => setIsAdmin(true)} />}
@@ -63,7 +84,7 @@ function App() {
               path="/create"
               element={
                 <ProtectedRoute isLoggedIn={isAdmin}>
-                  <CreateCampaign />
+                  <WithCampaigns><CreateCampaign /></WithCampaigns>
                 </ProtectedRoute>
               }
             />
@@ -71,7 +92,7 @@ function App() {
               path="/edit/:campaignId"
               element={
                 <ProtectedRoute isLoggedIn={isAdmin}>
-                  <Edit />
+                  <WithCampaigns><Edit /></WithCampaigns>
                 </ProtectedRoute>
               }
             />
@@ -79,19 +100,19 @@ function App() {
               path="/Admin"
               element={
                 <ProtectedRoute isLoggedIn={isAdmin}>
-                  <AdminDashboard />
+                  <WithCampaigns><AdminDashboard /></WithCampaigns>
                 </ProtectedRoute>
               }
             />
 
 
           </Routes>
+          </Suspense>
 
           </Box>
           <Footer />
         </Router>
       </Box>
-    </CampaignProvider>
   );
 }
 

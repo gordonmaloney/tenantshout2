@@ -1,12 +1,17 @@
 :root {
-  --font: "Roboto", sans-serif;
+  --font: Arial, Helvetica, sans-serif;
   --background-color: rgb(9, 124, 53);
-  --header-color: #FFFFFF;
+  --surface-color: #faf7f2;
+  --surface-soft: #fcfaf7;
+  --header-color: var(--surface-color);
   --campaign-title: #FFFFFF;
   --primary-color: rgb(9, 124, 53);
   --primary-color-semi-trans: rgba(9,124,53,0.5);
   --alert-color: rgb(120, 0, 0);
-  --secondary-color: #F6F3F6;
+  --secondary-color: var(--surface-soft);
+  --text-color: #172019;
+  --muted-text: #55645a;
+  --border-subtle: rgba(8, 21, 13, 0.14);
   --text-highlight: rgba(255, 255, 149, 0.406);
 
   --box-outline: 1px solid rgba(0, 0, 0, 0.8);

@@ -1,10 +1,10 @@
 @import './variables';
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 @font-face {
     font-family: 'Bebas Neue';
-    src: local('Bebas Neue'), url('./fonts/Bebas\ Neue.ttf') format('woff');
+    src: local('Bebas Neue'), url('./fonts/Bebas\ Neue.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
   }
 
 
@@ -28,40 +28,25 @@ html, body {
 
 body {
     font-family: $font;
-    background-image: url('./bg.jpeg');
+    background-color: $background-color;
+    background-image: linear-gradient(rgba(3, 55, 27, 0.7), rgba(3, 55, 27, 0.7)), url('./bg.jpeg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
     overflow-x: hidden;
     max-width: 100vw;
     min-height: 100vh;       /* fill the viewport vertically */
 }
 
 body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: $primary-color-semi-trans;
-        backdrop-filter: grayscale(80%) brightness(50%) blur(2px);
-
-    pointer-events: none;
-    /* Ensures overlay doesn’t interfere with content below */
-    z-index: 1;
-    /* Ensures the overlay appears above the background */
+    content: none;
 }
 
 .content {
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: relative;
     width: 100%;
     max-width: 100%;
-    height: 100%;
-    z-index: 2;
+    min-height: 100%;
 }
 
 .promptQ {
@@ -82,6 +67,7 @@ button {
 .header {
     width: 100%;
     background-color: $header-color;
+    border-bottom: 1px solid var(--border-subtle);
     height: 60px;
     display: flex;
     align-items: center;
