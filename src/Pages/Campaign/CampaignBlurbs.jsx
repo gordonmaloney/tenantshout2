@@ -40,9 +40,13 @@ const CampaignBlurbs = ({ campaign, stage }) => {
 						<br />
 						<br />
 
-						<a href={campaign.link} target="_blank" rel="noopener noreferrer">
-							<LinkIcon fontSize="small" /> {campaign.host}
-						</a>
+						{campaign.link ? (
+							<a href={campaign.link} target="_blank" rel="noopener noreferrer">
+								<LinkIcon fontSize="small" /> {campaign.host}
+							</a>
+						) : (
+							campaign.host
+						)}
 					</div>
 
 					<center>
@@ -74,9 +78,13 @@ const CampaignBlurbs = ({ campaign, stage }) => {
 					<br />
 					<br />
 
-					<a href={campaign.link} target="_blank" rel="noopener noreferrer">
-						<LinkIcon fontSize="small" /> {campaign.host}
-					</a>
+					{campaign.link ? (
+						<a href={campaign.link} target="_blank" rel="noopener noreferrer">
+							<LinkIcon fontSize="small" /> {campaign.host}
+						</a>
+					) : (
+						campaign.host
+					)}
 				</div>
 			)}
 		</>

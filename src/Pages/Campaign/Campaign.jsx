@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 import FetchTarget from "./FetchTarget";
 
@@ -14,8 +14,11 @@ import { webmailProviders } from "./webmailProviders";
 const Campaign = ({ campaign, stage, setStage }) => {
   const requirePostcode =
     campaign.target !== "custom" && campaign.target !== "edregcttee";
+  const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
   const [postcode, setPostcode] = useState("");
+  const fetchTargetRef = useRef(null);
+  const [checkingPostcode, setCheckingPostcode] = useState(false);
 
   useEffect(() => {}, [postcode]);
 
@@ -28,7 +31,9 @@ const Campaign = ({ campaign, stage, setStage }) => {
   const [prompts, setPrompts] = useState([]);
 
   const [emailClient, setEmailClient] = useState(undefined);
-  const [userEmail, setUserEmail] = useState(undefined);
+  const [userEmail, setUserEmail] = useState("");
+  const emailRequiredAndInvalid =
+    campaign.channel === "email" && !isValidEmail(userEmail || "");
 
   const matchProvider = (domain) => {
     return webmailProviders.find((p) =>
@@ -36,19 +41,22 @@ const Campaign = ({ campaign, stage, setStage }) => {
     );
   };
   const sniffMX = async (domain) => {
-    console.log("sniffing mx...");
-    const res = await fetch(
-      `https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`,
-      { headers: { Accept: "application/dns-json" } }
-    );
-    if (!res.ok) return null;
-    const { Answer } = await res.json();
-    for (let { data } of Answer || []) {
-      for (let provider of webmailProviders) {
-        if (data.includes(provider.mxHint)) {
-          return provider.name;
+    try {
+      const res = await fetch(
+        `https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`,
+        { headers: { Accept: "application/dns-json" } }
+      );
+      if (!res.ok) return null;
+      const { Answer } = await res.json();
+      for (let { data } of Answer || []) {
+        for (let provider of webmailProviders) {
+          if (data.includes(provider.mxHint)) {
+            return provider.name;
+          }
         }
       }
+    } catch {
+      return null;
     }
     return null;
   };
@@ -88,7 +96,7 @@ const Campaign = ({ campaign, stage, setStage }) => {
     // Load prompts with initial answers from campaign data
     if (campaign) {
       setPrompts(
-        campaign.prompts.map((prompt) => ({
+        (campaign.prompts || []).map((prompt) => ({
           ...prompt,
           answer: prompt.answer || "",
         }))
@@ -97,16 +105,20 @@ const Campaign = ({ campaign, stage, setStage }) => {
   }, [campaign]);
 
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const missingRequiredPrompts = prompts.some(
+    (prompt) =>
+      prompt.required &&
+      (prompt.answer === null ||
+        prompt.answer === undefined ||
+        prompt.answer === "")
+  );
+  const postcodeRequiredAndMissing = requirePostcode && !adminDivisions.ward;
+  const cannotContinue =
+    emailRequiredAndInvalid || missingRequiredPrompts || postcodeRequiredAndMissing;
+
   const handleButtonClick = () => {
     if (
-      !adminDivisions.ward ||
-      prompts.some(
-        (prompt) =>
-          prompt.required &&
-          (prompt.answer === null ||
-            prompt.answer === undefined ||
-            prompt.answer === "")
-      )
+      cannotContinue
     ) {
       setTooltipOpen(true);
       // Automatically close tooltip after 3 seconds
@@ -116,17 +128,33 @@ const Campaign = ({ campaign, stage, setStage }) => {
     }
   };
 
-  const handleNextClick = () => {
-    checkEmailClient();
+  const handleNextClick = async () => {
+    if (missingRequiredPrompts || emailRequiredAndInvalid) {
+      handleButtonClick();
+      return;
+    }
+
+    if (postcodeRequiredAndMissing) {
+      setCheckingPostcode(true);
+      const found = await fetchTargetRef.current?.fetchPostcodeData();
+      setCheckingPostcode(false);
+
+      if (!found) {
+        handleButtonClick();
+        return;
+      }
+    }
+
+    await checkEmailClient();
     setStage((old) => old + 1);
   };
 
   useEffect(() => {
       !requirePostcode &&
-      campaign.prompts.length == 0 &&
+      (campaign.prompts || []).length == 0 &&
       stage == 0 &&
       (setStage(1));
-  }, [stage]);
+  }, [campaign.prompts, requirePostcode, setStage, stage]);
 
   return (
     <div>
@@ -136,6 +164,7 @@ const Campaign = ({ campaign, stage, setStage }) => {
 
           {requirePostcode && (
             <FetchTarget
+              ref={fetchTargetRef}
               postcode={postcode}
               setPostcode={setPostcode}
               campaign={campaign}
@@ -150,10 +179,9 @@ const Campaign = ({ campaign, stage, setStage }) => {
           />
 
           <div
-            key={prompt.id}
             style={{ display: campaign.channel == "email" ? "block" : "none" }}
           >
-            <div className="email">Your email: </div>
+            <div className="email">Your email: *</div>
 
             <TextField
               placeholder="example@email.com"
@@ -161,6 +189,12 @@ const Campaign = ({ campaign, stage, setStage }) => {
               fullWidth
               value={userEmail}
               required
+              error={Boolean(userEmail) && emailRequiredAndInvalid}
+              helperText={
+                Boolean(userEmail) && emailRequiredAndInvalid
+                  ? "Enter a valid email address."
+                  : ""
+              }
               onChange={(e) => setUserEmail(e.target.value)}
             />
           </div>
@@ -184,18 +218,13 @@ const Campaign = ({ campaign, stage, setStage }) => {
                 <Button
                   sx={BtnStyleSmall}
                   disabled={
-                    (requirePostcode && !adminDivisions.ward) ||
-                    prompts.some(
-                      (prompt) =>
-                        prompt.required &&
-                        (prompt.answer === null ||
-                          prompt.answer === undefined ||
-                          prompt.answer === "")
-                    )
+                    checkingPostcode ||
+                    emailRequiredAndInvalid ||
+                    missingRequiredPrompts
                   }
                   onClick={() => handleNextClick()}
                 >
-                  Next
+                  {checkingPostcode ? "Checking..." : "Next"}
                 </Button>{" "}
               </span>
             </Tooltip>

@@ -55,8 +55,8 @@ export function useCustomTargetting(
                     setLoading(false)
 				})
 				.catch((err) => {
-					console.error("Error during custom targeting fetch:", err);
 					setErrorMsg(err.message);
+					setLoading(false);
 				});
 		}
 	}, [customTargetting]);

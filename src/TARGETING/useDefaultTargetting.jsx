@@ -64,6 +64,7 @@ export function useDefaultTargetting(
       return;
 
     let cancelled = false;
+    setLoading(true);
 
     fetch(`${DATA_BASE}/MSPs.json`)
       .then((res) => {
@@ -73,7 +74,11 @@ export function useDefaultTargetting(
       .then((data) => {
         if (!cancelled) setMSPs(data);
       })
-      .catch((err) => console.error("Could not load MSPs:", err));
+      .catch(() => {
+        if (cancelled) return;
+        setErrorMsg("Could not load MSPs");
+        setLoading(false);
+      });
 
     return () => {
       cancelled = true;
@@ -111,8 +116,7 @@ export function useDefaultTargetting(
           setErrorMsg("Could not load councillors");
         }
       })
-      .catch((err) => {
-        console.error("Could not load councillors:", err);
+      .catch(() => {
         setErrorMsg("Could not load councillors");
         setLoading(false);
       });
@@ -142,8 +146,7 @@ export function useDefaultTargetting(
         );
         setLoading(false);
       })
-      .catch((err) => {
-        console.error("Could not load MPs:", err);
+      .catch(() => {
         setErrorMsg("Could not load MPs");
         setLoading(false);
       });
@@ -266,8 +269,7 @@ export function useDefaultTargetting(
           setErrorMsg("");
         }
       })
-      .catch((err) => {
-        console.error("Could not load councillors", err);
+      .catch(() => {
         setErrorMsg("Could not load councillors.");
         setLoading(false);
       });

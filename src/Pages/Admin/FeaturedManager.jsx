@@ -1,73 +1,74 @@
-// Assumes you have `campaigns` (all campaigns) and `featured` (singleton doc)
-// and the API helper `updateFeaturedCampaigns(featuredIds, token)` available.
-
 import React, { useMemo, useState, useEffect } from "react";
 import {
   updateFeaturedCampaigns,
   getFeaturedCampaigns,
-} from "./featuredCampaignsApi"; // adjust path
+} from "./featuredCampaignsApi";
 import {
-  Grid2 as Grid,
   Box,
   Button,
-  Select,
-  MenuItem,
+  Divider,
   FormControl,
-  InputLabel,
+  IconButton,
   List,
   ListItem,
   ListItemText,
-  IconButton,
+  MenuItem,
+  Select,
+  Stack,
   Typography,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { BtnStyle, TextFieldStyle } from "../../MUIStyles";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
 
-// helper: safely extract an ID from various shapes
-const getId = (x) => String(x?._id ?? x?.id ?? x?.campaignId ?? x);
+const getCampaign = (item) => item?.campaign ?? item ?? {};
+const getId = (item) => {
+  const campaign = getCampaign(item);
+  return String(
+    campaign?._id ??
+      campaign?.id ??
+      campaign?.campaignId ??
+      item?._id ??
+      item?.id ??
+      item?.campaignId ??
+      item
+  );
+};
+const getLabel = (item) => {
+  const campaign = getCampaign(item);
+  return campaign?.title ?? campaign?.campaignId ?? getId(item);
+};
 
 export default function FeaturedManager({ campaigns = [] }) {
   const [addingId, setAddingId] = useState("");
-
-  //fetch featured
   const [featured, setFeatured] = useState([]);
 
   useEffect(() => {
-    getFeaturedCampaigns().then(setFeatured).catch(console.error);
+    getFeaturedCampaigns()
+      .then(setFeatured)
+      .catch(() => setFeatured({ featuredCampaigns: [] }));
   }, []);
 
-  // Normalize the list of featured IDs
   const featuredIds = useMemo(() => {
     const arr = featured?.featuredCampaigns ?? [];
     return arr.map(getId);
   }, [featured]);
 
-  // Build full featured campaign objects (works whether `featuredCampaigns` is populated or just IDs)
   const featuredObjects = useMemo(() => {
     const arr = featured?.featuredCampaigns ?? [];
-    // If populated, items already look like campaigns
-    const maybePopulated = arr.map((item) =>
-      item?.title || item?.campaignId ? item : null
-    );
-    const isPopulated = maybePopulated.every(Boolean);
+    const byId = new Map(campaigns.map((campaign) => [getId(campaign), campaign]));
 
-    if (isPopulated) return maybePopulated;
+    return arr.map((item) => byId.get(getId(item)) ?? item).filter(Boolean);
+  }, [featured, campaigns]);
 
-    // Not populated → map IDs to full campaign objects from `campaigns`
-    const byId = new Map(campaigns.map((c) => [getId(c), c]));
-    return featuredIds.map((id) => byId.get(id)).filter(Boolean);
-  }, [featured, campaigns, featuredIds]);
-
-  // All non-featured campaigns for the dropdown
   const addableCampaigns = useMemo(() => {
     const set = new Set(featuredIds);
-    return campaigns.filter((c) => !set.has(getId(c)));
+    return campaigns.filter((campaign) => !set.has(getId(campaign)));
   }, [campaigns, featuredIds]);
 
   const persist = async (newIds) => {
     const token = localStorage.getItem("token");
     const updated = await updateFeaturedCampaigns(newIds, token);
-    // `updated.featuredCampaigns` may be populated (objects) or IDs depending on backend populate()
     setFeatured(updated);
   };
 
@@ -81,11 +82,10 @@ export default function FeaturedManager({ campaigns = [] }) {
   };
 
   const handleAdd = async () => {
-    if (!addingId) return;
-    if (featuredIds.includes(addingId)) return; // guard
+    if (!addingId || featuredIds.includes(addingId)) return;
+
     try {
-      const newIds = [...featuredIds, addingId];
-      await persist(newIds);
+      await persist([...featuredIds, addingId]);
       setAddingId("");
     } catch (err) {
       alert(err.message);
@@ -93,106 +93,202 @@ export default function FeaturedManager({ campaigns = [] }) {
   };
 
   return (
-    <>
-      <h1> Featured Campaigns</h1>
-
-<p>Chose which campaigns will feature on the home page:</p>
+    <Box>
+      <Box
+        sx={{
+          maxWidth: "70ch",
+        }}
+      >
+        <Typography component="h2" sx={sectionTitleSx}>
+          Featured campaigns
+        </Typography>
+        <Typography sx={sectionCopySx}>
+          Choose which campaigns appear on the TenantShout homepage.
+        </Typography>
+      </Box>
 
       <Box
         sx={{
-          maxWidth: 420,
-          border: "1px solid",
-          borderColor: "divider",
-          p: 2,
-          m: 2,
-          borderRadius: 2,
+          backgroundColor: "rgba(9, 124, 53, 0.065)",
+          border: "1px solid rgba(9, 124, 53, 0.18)",
+          borderRadius: 1,
+          mt: 2,
+          p: { xs: 1.5, sm: 2 },
         }}
       >
-        <List dense sx={{ mt: 1 }}>
-          {featuredObjects.map((camp) => {
-            const id = getId(camp);
-            const primary = camp?.campaignId || camp?.title || id;
-            return (
-              <ListItem
-                key={id}
-                secondaryAction={
-                  <IconButton
-                    edge="end"
-                    aria-label="remove"
-                    onClick={() => handleRemove(id)}
-                    size="small"
-                  >
-                    <DeleteOutlineIcon />
-                  </IconButton>
-                }
-              >
-                <ListItemText primary={primary} />
-              </ListItem>
-            );
-          })}
-          {featuredObjects.length === 0 && (
-            <ListItem>
-              <ListItemText primary="(none yet)" />
-            </ListItem>
-          )}
-        </List>
-
-        <Grid container spacing={1} alignItems="center">
-          <Grid size={{ xs: 12, sm: 8 }}>
-            <FormControl fullWidth size="small">
-              <Select
-                labelId="add-campaign-label"
-                id="add-campaign"
-                value={addingId}
-                sx={TextFieldStyle}
-                label="Add a campaign"
-                onChange={(e) => setAddingId(e.target.value)}
-                displayEmpty
-                renderValue={(val) =>
-                  val ? (
-                    addableCampaigns.find((c) => getId(c) === val)?.title ??
-                    addableCampaigns.find((c) => getId(c) === val)
-                      ?.campaignId ??
-                    val
-                  ) : (
-                    <span style={{ color: "rgba(0,0,0,0.6)" }}>
-                      — Select a campaign to add —
-                    </span>
-                  )
-                }
-              >
-                <MenuItem value="">
-                  <em>— Select a campaign to add —</em>
-                </MenuItem>
-                {addableCampaigns.map((c) => {
-                  const id = getId(c);
-                  const label = c.campaignId || c.title || id;
-                  return (
-                    <MenuItem key={id} value={id}>
-                      {label}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 4 }}>
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={handleAdd}
-              disabled={!addingId}
+        <Typography
+          component="h3"
+          sx={{
+            color: "var(--text-color)",
+            fontSize: "0.98rem",
+            fontWeight: 800,
+            lineHeight: 1.2,
+            mb: 1.25,
+          }}
+        >
+          Add a campaign to the homepage
+        </Typography>
+        <Stack direction={{ xs: "column", md: "row" }} spacing={1.25}>
+          <FormControl fullWidth size="small">
+            <Typography
+              component="label"
+              htmlFor="add-campaign"
               sx={{
-                ...BtnStyle,
-                color: addingId ? "white" : "grey !important",
+                color: "var(--muted-text)",
+                display: "block",
+                fontSize: "0.78rem",
+                fontWeight: 800,
+                mb: 0.5,
+                textTransform: "uppercase",
               }}
             >
-              Add to featured
-            </Button>
-          </Grid>
-        </Grid>
+              Campaign
+            </Typography>
+            <Select
+              id="add-campaign"
+              value={addingId}
+              onChange={(event) => setAddingId(event.target.value)}
+              displayEmpty
+              renderValue={(value) =>
+                value
+                  ? getLabel(addableCampaigns.find((campaign) => getId(campaign) === value))
+                  : "Select a campaign to feature"
+              }
+              sx={{
+                backgroundColor: "white",
+                borderRadius: 1,
+                minHeight: 40,
+                ".MuiOutlinedInput-notchedOutline": {
+                  borderColor: "var(--border-subtle)",
+                },
+              }}
+            >
+              <MenuItem value="">
+                <em>Select a campaign</em>
+              </MenuItem>
+              {addableCampaigns.map((campaign) => {
+                const id = getId(campaign);
+                return (
+                  <MenuItem key={id} value={id}>
+                    {getLabel(campaign)}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+
+          <Button
+            onClick={handleAdd}
+            disabled={!addingId}
+            startIcon={<AddCircleOutlineIcon />}
+            sx={{
+              backgroundColor: "var(--primary-color)",
+              border: "1px solid var(--primary-color)",
+              borderRadius: 1,
+              boxShadow: "none",
+              color: "white",
+              fontFamily: "inherit",
+              fontSize: "0.9rem",
+              fontWeight: 800,
+              minHeight: 40,
+              opacity: addingId ? 1 : 0.56,
+              px: 1.75,
+              textTransform: "none",
+              whiteSpace: "nowrap",
+              "&:hover": {
+                backgroundColor: "rgb(3, 55, 27)",
+                borderColor: "rgb(3, 55, 27)",
+                boxShadow: "none",
+              },
+            }}
+          >
+            Add featured
+          </Button>
+        </Stack>
       </Box>
-    </>
+
+      <Box
+        sx={{
+          backgroundColor: "rgba(9, 124, 53, 0.045)",
+          border: "1px solid var(--border-subtle)",
+          borderRadius: 1,
+          mt: 2,
+          overflow: "hidden",
+        }}
+      >
+        <List dense disablePadding>
+          {featuredObjects.length === 0 ? (
+            <ListItem sx={{ px: 2, py: 1.5 }}>
+              <ListItemText
+                primary="No featured campaigns selected"
+                primaryTypographyProps={{ sx: { color: "var(--muted-text)" } }}
+              />
+            </ListItem>
+          ) : (
+            featuredObjects.map((campaign, index) => {
+              const id = getId(campaign);
+              return (
+                <React.Fragment key={id}>
+                  <ListItem
+                    secondaryAction={
+                      <IconButton
+                        aria-label={`Remove ${getLabel(campaign)} from featured campaigns`}
+                        onClick={() => handleRemove(id)}
+                        size="small"
+                        sx={{ color: "var(--muted-text)" }}
+                      >
+                        <DeleteOutlineIcon />
+                      </IconButton>
+                    }
+                    sx={{ px: 2, py: 1.15 }}
+                  >
+                    <StarBorderIcon
+                      sx={{
+                        color: "var(--primary-color)",
+                        flex: "0 0 auto",
+                        mr: 1.25,
+                      }}
+                    />
+                    <ListItemText
+                      primary={getLabel(campaign)}
+                      secondary={id}
+                      primaryTypographyProps={{
+                        sx: {
+                          color: "var(--text-color)",
+                          fontWeight: 800,
+                          lineHeight: 1.25,
+                        },
+                      }}
+                      secondaryTypographyProps={{
+                        sx: {
+                          color: "var(--muted-text)",
+                          fontFamily: "monospace",
+                          fontSize: "0.78rem",
+                        },
+                      }}
+                    />
+                  </ListItem>
+                  {index < featuredObjects.length - 1 && <Divider />}
+                </React.Fragment>
+              );
+            })
+          )}
+        </List>
+      </Box>
+    </Box>
   );
 }
+
+const sectionTitleSx = {
+  color: "var(--text-color)",
+  fontSize: "1.25rem",
+  fontWeight: 800,
+  lineHeight: 1.15,
+  m: 0,
+};
+
+const sectionCopySx = {
+  color: "var(--muted-text)",
+  lineHeight: 1.5,
+  mt: 0.5,
+};

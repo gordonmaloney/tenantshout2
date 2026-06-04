@@ -44,6 +44,12 @@ import { useCustomTargetting } from "../../../TARGETING/useCustomTargetting";
  * @param {Function} props.emailClient       Detected email client (if any)
  */
 
+const getRecipientKey = (recipient, index, prefix = "recipient") =>
+  `${prefix}-${recipient?.email || recipient?.handle || recipient?.name || index}-${index}`;
+
+const escapeRegExp = (value) =>
+  String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 const Message = ({
   campaign,
   prompts,
@@ -56,9 +62,26 @@ const Message = ({
   const [messaging, setMessaging] = useState([]);
   const [notMessaging, setNotMessaging] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
+  const campaignPrompts = useMemo(
+    () => (Array.isArray(campaign.prompts) ? campaign.prompts : []),
+    [campaign.prompts],
+  );
+  const isCustomCampaign = campaign.target === "custom";
+  const customTargets = useMemo(
+    () => (Array.isArray(campaign.customTarget) ? campaign.customTarget : []),
+    [campaign.customTarget],
+  );
+  const defaultLookupTargets = [
+    "edinburgh",
+    "glasgow",
+    "highland",
+    "mps",
+    "msps",
+    "cllrs-msps-ben-siobhan",
+  ];
 
 const [newSubject, setNewSubject] = useState(() => {
-  const subj = campaign.subject;
+  const subj = campaign.subject || "";
 
   // Normalize to an array of non-empty strings
   const subjects = Array.isArray(subj)
@@ -92,12 +115,12 @@ const [newSubject, setNewSubject] = useState(() => {
   });
 
   const promptsChanged = false;
-  const { template } = campaign;
+  const { template = "" } = campaign;
 
   const includePostcodeArray = ["edinburgh", "glasgow", "msps", "mps"];
 
   const [newTemplate, setNewTemplate] = useState(
-    `${campaign.template}${
+    `${campaign.template || ""}${
       includePostcodeArray.includes(campaign.target) &&
       campaign.channel == "email" &&
       postcode.trim()
@@ -145,15 +168,17 @@ const [newSubject, setNewSubject] = useState(() => {
   }, [messaging]);
 
   const createPromptAnswers = (prompts) => {
-    return prompts.reduce((acc, prompt) => {
+    return (prompts || []).reduce((acc, prompt) => {
+      if (!prompt?.id) return acc;
       acc[prompt.id] = prompt.answer;
       return acc;
     }, {});
   };
-  const promptAnswers = createPromptAnswers(prompts);
+  const promptAnswers = createPromptAnswers(prompts || []);
 
   //PROMPT LOGIC
   const addPrompt = (prompt) => {
+    const promptId = escapeRegExp(prompt.id);
     if (promptAnswers[prompt.id] !== "") {
       setNewTemplate((old) =>
         old.replace(`<<${prompt.id}>>`, `${promptAnswers[prompt.id]}`)
@@ -162,9 +187,9 @@ const [newSubject, setNewSubject] = useState(() => {
       setNewTemplate((old) =>
         old
           // case 1: surrounded by newlines → replace with a single newline
-          .replace(new RegExp(`\\n<<${prompt.id}>>\\n`), "")
+          .replace(new RegExp(`\\n<<${promptId}>>\\n`), "")
           // case 2: otherwise just remove the placeholder
-          .replace(new RegExp(`<<${prompt.id}>>`), "")
+          .replace(new RegExp(`<<${promptId}>>`), "")
       );
     }
   };
@@ -172,14 +197,11 @@ const [newSubject, setNewSubject] = useState(() => {
   const [extractedStringArray, setExtractedStringArray] = useState([]);
 
   const addCondition = (prompt) => {
-    console.log("Processing condition: " + prompt.id);
-
-    const promptId = prompt.id;
+    const promptId = escapeRegExp(prompt.id);
+    const rawPromptId = prompt.id;
 
     // Case for undefined (no answer)
-    if (typeof promptAnswers[promptId] == "string") {
-      console.log("No answer, removing all placeholders for this prompt.");
-
+    if (typeof promptAnswers[rawPromptId] == "string") {
       // Remove all "no" and "yes" placeholders
       let frameExtractionRegexNo = new RegExp(
         String.raw`<<${promptId}=no:.*?>>`,
@@ -196,10 +218,8 @@ const [newSubject, setNewSubject] = useState(() => {
     }
 
     // Case for "yes" condition
-    if (promptAnswers[promptId]) {
+    if (promptAnswers[rawPromptId]) {
       try {
-        console.log("Processing positive answer (yes)...");
-
         // Get all matches for "yes" and replace each individually
         const yesMatches = Array.from(
           template.matchAll(new RegExp(`<<${promptId}=yes:(.*?)>>`, "gs"))
@@ -230,9 +250,7 @@ const [newSubject, setNewSubject] = useState(() => {
     }
 
     // Case for "no" condition
-    if (!promptAnswers[promptId]) {
-      console.log("Processing negative answer (no)...");
-
+    if (!promptAnswers[rawPromptId]) {
       try {
         // Get all matches for "no" and replace each individually
         const noMatches = Array.from(
@@ -265,22 +283,22 @@ const [newSubject, setNewSubject] = useState(() => {
   };
 
   useEffect(() => {
-    campaign.prompts
+    campaignPrompts
       .filter((prompt) => prompt.answerType == "text")
-      .map((prompt) => {
+      .forEach((prompt) => {
         addPrompt(prompt);
       });
-              campaign.prompts
-.filter((prompt) => prompt.answerType == "text-multiline")
-      .map((prompt) => {
+    campaignPrompts
+      .filter((prompt) => prompt.answerType == "text-multiline")
+      .forEach((prompt) => {
         addPrompt(prompt);
       });
-    campaign.prompts
+    campaignPrompts
       .filter((prompt) => prompt.answerType == "yesno")
-      .map((prompt) => {
+      .forEach((prompt) => {
         addCondition(prompt);
       });
-  }, [campaign.prompts]);
+  }, [campaignPrompts]);
 
   const [sent, setSent] = useState(false);
   const [noClient, setNoClient] = useState(false);
@@ -292,6 +310,7 @@ const [newSubject, setNewSubject] = useState(() => {
   const Mobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
   const [copyIn, setCopyIn] = useState(false);
+  const phoneTarget = customTargets.find((target) => target?.phone);
 
   const editableDivProps = useMemo(
     () => ({
@@ -306,7 +325,7 @@ const [newSubject, setNewSubject] = useState(() => {
       substrings: [
         ...Object.values(promptAnswers),
         ...extractedStringArray,
-      ].filter((str) => str !== String),
+      ].filter((str) => typeof str === "string" && str.length > 0),
       promptsChanged,
     }),
     [
@@ -319,27 +338,48 @@ const [newSubject, setNewSubject] = useState(() => {
   );
 
   useEffect(() => {
-    if (campaign.customTarget) {
-      setMessaging(campaign.customTarget);
+    if (isCustomCampaign && customTargets.length > 0) {
+      setMessaging(customTargets);
+      setLoading(false);
+      return;
+    }
+
+    if (isCustomCampaign) {
+      setErrorMsg("No custom targets found.");
       setLoading(false);
     }
-  }, [campaign]);
+  }, [customTargets, isCustomCampaign]);
+
+  useEffect(() => {
+    if (
+      campaign.channel === "twitter" &&
+      !campaign.customTargetting &&
+      !defaultLookupTargets.includes(campaign.target)
+    ) {
+      setLoading(false);
+    }
+  }, [campaign.channel, campaign.customTargetting, campaign.target]);
 
   if (Loading) {
-    return <></>;
+    return <p>Loading your representatives...</p>;
   }
 
-  if (errorMsg !== "") {
+  if (errorMsg !== "" || (campaign.channel === "email" && messaging.length === 0)) {
     return (
-      <>
-        Sorry - something has gone wrong while looking up your representative's
-        data. This could be because you don't live in the campaign area, but if
-        you think that is a mistake, let us know and we'll try to get it fixed!
-      </>
+      <Box>
+        <p>
+          Sorry - something has gone wrong while looking up your
+          representative's data. This could be because you don't live in the
+          campaign area, but if you think that is a mistake, use the report
+          button below and we'll try to get it fixed.
+        </p>
+        <Button sx={BtnStyleSmall} onClick={() => setStage(0)}>
+          Back
+        </Button>
+      </Box>
     );
   }
 
-  console.log(campaign)
   return (
     <div>
       {campaign.channel == "email" && (
@@ -384,12 +424,15 @@ const [newSubject, setNewSubject] = useState(() => {
                 border: "1px solid lightgray",
               }}
             >
-              {messaging.map((msp) => (
+              {messaging.map((msp, index) => (
                 <Chip
-                  label={`${msp.name} ${
-                    campaign.customTarget && campaign.customTarget.length > 0
+                  key={getRecipientKey(msp, index, "messaging")}
+                  label={`${msp.name || msp.email || "Recipient"} ${
+                    isCustomCampaign
                       ? ""
-                      : ` - ${msp.party}`
+                      : msp.party
+                      ? ` - ${msp.party}`
+                      : ""
                   }`}
                   variant="outlined"
                   sx={{ margin: "2px" }}
@@ -475,11 +518,16 @@ const [newSubject, setNewSubject] = useState(() => {
                         If you'd like to include them, just tap their name.
                       </div>
                       <br />
-                      {notMessaging.map((msp) => (
+                      {notMessaging.map((msp, index) => (
                         <Chip
+                          key={getRecipientKey(msp, index, "not-messaging")}
                           size="small"
-                          label={`${msp.name} ${
-                            campaign.customTarget ? "" : ` - ${msp.party}`
+                          label={`${msp.name || msp.email || "Recipient"} ${
+                            isCustomCampaign
+                              ? ""
+                              : msp.party
+                              ? ` - ${msp.party}`
+                              : ""
                           }`}
                           variant="outlined"
                           sx={{ backgroundColor: "white", margin: "2px" }}
@@ -514,7 +562,7 @@ const [newSubject, setNewSubject] = useState(() => {
             label="Subject Line"
             id="subject"
             fullWidth
-            value={newSubject}
+            value={newSubject || ""}
             sx={TextFieldStyle}
             onChange={(e) => setNewSubject(e.target.value)}
           />
@@ -615,18 +663,22 @@ const [newSubject, setNewSubject] = useState(() => {
           </Button>
         ) : (
           <center>
-            <p style={{ fontSize: "large" }}>
-              When you're ready, just dial{" "}
-              <u>{campaign.customTarget[0].phone}</u>, or click the button
-              below.
-            </p>
-            <Button
-              sx={BtnStyleSmall}
-              href={`tel:${campaign.customTarget[0].phone}`}
-              onClick={() => {}}
-            >
-              Phone {campaign.customTarget[0].phone}
-            </Button>
+            {phoneTarget ? (
+              <>
+                <p style={{ fontSize: "large" }}>
+                  When you're ready, just dial <u>{phoneTarget.phone}</u>, or
+                  click the button below.
+                </p>
+                <Button sx={BtnStyleSmall} href={`tel:${phoneTarget.phone}`}>
+                  Phone {phoneTarget.phone}
+                </Button>
+              </>
+            ) : (
+              <p>
+                Sorry - the phone number for this campaign is missing. Use the
+                report button below and we'll get it fixed.
+              </p>
+            )}
           </center>
         )}
       </div>

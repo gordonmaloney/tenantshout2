@@ -11,6 +11,26 @@ import DOMPurify from 'dompurify';
 
 //this is for the FAQ accordion for the campaign
 
+const sanitizeFaqAnswer = (answer) => {
+	const sanitized = DOMPurify.sanitize(answer || "", {
+		ADD_ATTR: ["target", "rel"],
+	});
+
+	if (typeof DOMParser === "undefined") return sanitized;
+
+	const doc = new DOMParser().parseFromString(
+		`<div>${sanitized}</div>`,
+		"text/html"
+	);
+
+	doc.querySelectorAll("a").forEach((link) => {
+		link.setAttribute("target", "_blank");
+		link.setAttribute("rel", "noopener noreferrer");
+	});
+
+	return doc.body.firstElementChild?.innerHTML || sanitized;
+};
+
 
 const CampaignAccordion = ({ campaign }) => {
 	const [expanded, setExpanded] = useState(false);
@@ -49,7 +69,7 @@ const CampaignAccordion = ({ campaign }) => {
 					<AccordionDetails>
 					<div 
 					style={{whiteSpace: 'pre-wrap'}}
-					dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.a) }} />
+					dangerouslySetInnerHTML={{ __html: sanitizeFaqAnswer(item.a) }} />
 					</AccordionDetails>
 				</Accordion>
 			))}

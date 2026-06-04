@@ -8,14 +8,17 @@ export const useCampaigns = () => useContext(CampaignContext);
 export const CampaignProvider = ({ children }) => {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const fetchCampaigns = async () => {
     try {
+      setError("");
       const res = await fetch(ENDPOINT + 'campaigns/');
+      if (!res.ok) throw new Error("Failed to fetch campaigns");
       const data = await res.json();
       setCampaigns(data);
-    } catch (err) {
-      console.error('Failed to fetch campaigns:', err);
+    } catch {
+      setError("Could not load campaigns.");
     } finally {
       setLoading(false);
     }
@@ -26,7 +29,7 @@ export const CampaignProvider = ({ children }) => {
   }, []);
 
   return (
-    <CampaignContext.Provider value={{ campaigns, setCampaigns, loading, fetchCampaigns }}>
+    <CampaignContext.Provider value={{ campaigns, setCampaigns, loading, error, fetchCampaigns }}>
       {children}
     </CampaignContext.Provider>
   );

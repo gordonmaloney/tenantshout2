@@ -50,7 +50,7 @@ export default function FeaturedCampaigns() {
   useEffect(() => {
     getFeaturedCampaigns()
       .then((data) => setFeatured(data || { featuredCampaigns: [] }))
-      .catch(console.error)
+      .catch(() => setFeatured({ featuredCampaigns: [] }))
       .finally(() => setLoading(false));
   }, []);
 

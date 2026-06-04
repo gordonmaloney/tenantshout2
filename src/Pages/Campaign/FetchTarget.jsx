@@ -1,18 +1,18 @@
-import React, { useState } from "react";
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 import { TextField } from "@mui/material";
-import { BtnStyle, TextFieldStyle } from "../../MUIStyles";
+import { TextFieldStyle } from "../../MUIStyles";
 
 //Take user's postcode  and set adminDivisions
 
 //this uses the postcodes.io API
 
-const FetchTarget = ({
+const FetchTarget = forwardRef(({
   campaign,
   postcode,
   setPostcode,
   adminDivisions,
   setAdminDivisions,
-}) => {
+}, ref) => {
   const [invalidPC, setInvalidPC] = useState(false);
   const [searching, setSearching] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -26,7 +26,16 @@ const FetchTarget = ({
     const response = await fetch(
       `https://api.postcodes.io/postcodes/${trimmedPostcode}`,
     );
-    return response.json();
+    if (!response.ok) {
+      throw new Error("Postcode lookup failed");
+    }
+
+    const data = await response.json();
+    if (!data?.result) {
+      throw new Error("Postcode lookup returned no result");
+    }
+
+    return data;
   };
 
   const POSTCODE_DATA_BASE =
@@ -51,15 +60,12 @@ const FetchTarget = ({
 
   // Fetch Scotland-specific data from your static Netlify files
   const fetchScotlandData = async (postcode) => {
-    console.log("fetching scotland data", postcode);
     const normalised = normalisePostcode(postcode);
     const outward = getOutwardCode(normalised);
 
     if (!outward) {
       throw new Error("Could not identify outward postcode");
     }
-
-	console.log('outward', outward)
     const response = await fetch(`${POSTCODE_DATA_BASE}/${outward}.json`);
 
     if (!response.ok) {
@@ -70,7 +76,6 @@ const FetchTarget = ({
 
     const result = data[normalised];
 
-	console.log('result', result)
     if (!result) {
       throw new Error(`Postcode not found in ${outward}.json`);
     }
@@ -94,7 +99,7 @@ const FetchTarget = ({
       setErrorMessage(
         "Invalid postcode format. Please enter a valid UK postcode.",
       );
-      return;
+      return false;
     }
 
     setSearching(true);
@@ -104,16 +109,17 @@ const FetchTarget = ({
     try {
       const uk_data = await fetchUKData(trimmedPostcode);
 
-      if (uk_data.result.country === "Scotland") {
+      const ukResult = uk_data.result;
+
+      if (ukResult.country === "Scotland") {
         const scotland_data = await fetchScotlandData(trimmedPostcode);
-		console.log('scotland data', scotland_data)
 
         if (scotland_data.c !== null) {
-          setAdminDivisions({
-            constituency: uk_data.result.parliamentary_constituency,
-            ward: uk_data.result.admin_ward,
-            scotConstituency: scotland_data.c,
-            scotRegion: scotland_data.r,
+        setAdminDivisions({
+          constituency: ukResult.parliamentary_constituency,
+          ward: ukResult.admin_ward,
+          scotConstituency: scotland_data.c,
+          scotRegion: scotland_data.r,
           });
         } else {
           //this should be  fixed now
@@ -130,15 +136,15 @@ const FetchTarget = ({
           }
 
           setAdminDivisions({
-            constituency: uk_data.result.parliamentary_constituency,
-            ward: uk_data.result.admin_ward,
+            constituency: ukResult.parliamentary_constituency,
+            ward: ukResult.admin_ward,
             scotConstituency: correctedScotConstituency,
           });
         }
       } else {
         setAdminDivisions({
-          constituency: uk_data.result.parliamentary_constituency,
-          ward: uk_data.result.admin_ward,
+          constituency: ukResult.parliamentary_constituency,
+          ward: ukResult.admin_ward,
           scotConstituency: "",
         });
       }
@@ -148,10 +154,18 @@ const FetchTarget = ({
         "Looks like there's something wrong with your postcode. Please check or try again later.",
       );
       setAdminDivisions({ ward: "", constituency: "", scotConstituency: "" });
+      return false;
     } finally {
       setSearching(false);
     }
+
+    return true;
   };
+
+  useImperativeHandle(ref, () => ({
+    fetchPostcodeData,
+    searching,
+  }));
 
   return (
     <>
@@ -165,6 +179,12 @@ const FetchTarget = ({
         fullWidth
         value={postcode}
         onChange={(e) => setPostcode(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && postcode.trim() !== "") {
+            e.preventDefault();
+            fetchPostcodeData();
+          }
+        }}
         onBlur={() => {
           if (postcode.trim() !== "") fetchPostcodeData();
         }}
@@ -185,6 +205,6 @@ const FetchTarget = ({
       )}
     </>
   );
-};
+});
 
 export default FetchTarget;

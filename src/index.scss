@@ -28,10 +28,11 @@ html, body {
 
 body {
     font-family: $font;
-    background-color: $background-color;
+    background-color: rgb(3, 55, 27);
     background-image: linear-gradient(rgba(3, 55, 27, 0.7), rgba(3, 55, 27, 0.7)), url('./bg.jpeg');
     background-size: cover;
     background-position: center;
+    background-attachment: fixed;
     background-repeat: no-repeat;
     overflow-x: hidden;
     max-width: 100vw;

@@ -104,6 +104,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute isLoggedIn={isAdmin}>
+                  <WithCampaigns><AdminDashboard /></WithCampaigns>
+                </ProtectedRoute>
+              }
+            />
 
 
           </Routes>

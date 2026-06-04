@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 
 //LOOK I KNOW THIS WHOLE COMPONENT IS BANANAS BUT IT WORKS SO DON'T CHANGE IT WITHOUT BEING VERY CAREFUL
 
+const escapeRegExp = (value) =>
+	String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 const EditableDiv = ({
 	substrings,
 	label,
@@ -13,6 +16,7 @@ const EditableDiv = ({
 
 	useEffect(() => {
 		const textField = textFieldRef.current;
+		if (!textField) return;
 		let textContent = textField.innerHTML;
 
 		// Find and highlight prompt answers
@@ -27,7 +31,7 @@ const EditableDiv = ({
 				return content;
 			}
 
-			const regex = new RegExp(`(?<!\\w)${answer}(?!\\w)`, "gis");
+			const regex = new RegExp(`(?<!\\w)${escapeRegExp(answer)}(?!\\w)`, "gis");
 			return content.replaceAll(
 				regex,
 				`<span class="fadeHighlight">${answer}</span>`

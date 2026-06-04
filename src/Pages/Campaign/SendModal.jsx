@@ -39,6 +39,8 @@ export const SendModal = ({
 	copyIn,
 	emailClient,
 }) => {
+	const [copyError, setCopyError] = useState("");
+
 	const generateLink = (forceMailto) => {
 
 		if (campaign.channel == "twitter") {
@@ -46,7 +48,10 @@ export const SendModal = ({
 		}
 
 		// 1) Build the to-list
-		const toList = messaging.map((t) => t.email).join(",");
+		const toList = messaging
+			.map((t) => t?.email)
+			.filter(Boolean)
+			.join(",");
 
 		// 2) Only include bcc if copyIn is true
 		const effectiveBcc = copyIn ? campaign.bcc : "";
@@ -98,14 +103,24 @@ sendLink = `mailto:${toList}${query.length ? "?" + query.join("&") : ""}`;
 		try {
 			// Copy the current page URL to the clipboard
 			await navigator.clipboard.writeText(window.location.href);
+			setCopyError("");
 			// Show the tooltip with "Copied" message
 			setCopied(true);
 			// Hide the tooltip after 3 seconds
 			setTimeout(() => {
 				setCopied(false);
 			}, 2000);
-		} catch (err) {
-			console.error("Failed to copy: ", err);
+		} catch {
+			setCopyError("Sorry, copying did not work in this browser.");
+		}
+	};
+
+	const copyText = async (text) => {
+		try {
+			await navigator.clipboard.writeText(text);
+			setCopyError("");
+		} catch {
+			setCopyError("Sorry, copying did not work in this browser.");
 		}
 	};
 
@@ -139,10 +154,11 @@ sendLink = `mailto:${toList}${query.length ? "?" + query.join("&") : ""}`;
 									<Button
 										sx={BtnStyleSmall}
 										onClick={() =>
-											navigator.clipboard.writeText(
-												`${messaging.map((targ) => targ.email + `,`)}  ${
-													campaign.bcc
-												}`
+											copyText(
+												[
+													...messaging.map((targ) => targ?.email).filter(Boolean),
+													...(copyIn && campaign.bcc ? [campaign.bcc] : []),
+												].join(",")
 											)
 										}
 									>
@@ -155,7 +171,7 @@ sendLink = `mailto:${toList}${query.length ? "?" + query.join("&") : ""}`;
 								<center>
 									<Button
 										sx={BtnStyleSmall}
-										onClick={() => navigator.clipboard.writeText(newSubject)}
+										onClick={() => copyText(newSubject || "")}
 									>
 										Copy subject
 									</Button>
@@ -165,7 +181,7 @@ sendLink = `mailto:${toList}${query.length ? "?" + query.join("&") : ""}`;
 								<center>
 									<Button
 										sx={BtnStyleSmall}
-										onClick={() => navigator.clipboard.writeText(newTemplate)}
+										onClick={() => copyText(newTemplate || "")}
 									>
 										Copy email body
 									</Button>
@@ -344,7 +360,6 @@ TODO: explore this
 							</Tooltip>{" "}
 							to copy the link and share it with your friends!
 						</p>
-
 						<span style={{ fontSize: "12px", display: campaign.channel !== 'twitter' ? "block" : "none"}}>
 							<em>
 								Didn't work? If your email client didn't open, you can use{" "}
@@ -354,6 +369,12 @@ TODO: explore this
 							</em>
 						</span>
 					</>
+				)}
+
+				{copyError && (
+					<p style={{ color: "rgba(221,28,26,1)", fontSize: "0.9rem" }}>
+						{copyError}
+					</p>
 				)}
 
 				<center>

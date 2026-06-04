@@ -1,7 +1,6 @@
 import React, { useState }  from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Campaign from "./Campaign";
-import { ALL_CAMPAIGNS } from "../../Data/CampaignData";
 import { useCampaigns } from '../../CampaignContext';
 
 import CampaignBlurbs from "./CampaignBlurbs";
@@ -26,16 +25,14 @@ import {BarLoader} from 'react-spinners'
 
 const CampaignTopLevel = ({testCampaign}) => {
 	const [open, setOpen] = useState(false);
-	const [error, setError] = useState('');
 
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => {
 	  setOpen(false);
-	  setError('');
 	};
   
 
-		const { campaigns, loading } = useCampaigns();
+		const { campaigns, loading, error: campaignsError } = useCampaigns();
 		const { campaignId } = useParams();
 		const campaign = testCampaign || campaigns.find((c) => c.campaignId === campaignId)?.campaign;
 
@@ -53,8 +50,29 @@ const CampaignTopLevel = ({testCampaign}) => {
 
 	const [stage, setStage] = useState(0);
 
-	if (!loading && !campaign) {
-		return <div>Campaign not found</div>;
+	if (!loading && (campaignsError || !campaign)) {
+		return (
+			<Box
+				sx={{
+					maxWidth: 720,
+					margin: "60px auto",
+					padding: "24px 20px",
+					textAlign: "center",
+					backgroundColor: "var(--secondary-color)",
+					borderRadius: "4px",
+					boxShadow: "0 2px 8px rgba(0,0,0,0.16)",
+				}}
+			>
+				<h1>{campaignsError ? "Campaigns could not load" : "Campaign not found"}</h1>
+				<p>
+					{campaignsError ||
+						"Sorry, this campaign link is not working. It may have been removed or the address may be wrong."}
+				</p>
+				<Button component={Link} to="/" sx={BtnStyleSmall}>
+					Back to campaigns
+				</Button>
+			</Box>
+		);
 	}
 
 	if (loading) {

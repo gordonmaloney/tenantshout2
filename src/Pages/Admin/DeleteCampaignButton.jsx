@@ -11,13 +11,13 @@ import {
   Typography
 } from '@mui/material';
 import { ENDPOINT } from '../../Endpoints';
-import { BtnStyleCancel, BtnStyleSecondary, BtnStyleSmall, TextFieldStyle } from '../../MUIStyles';
+import { BtnStyleCancel, BtnStyleSecondary, TextFieldStyle } from '../../MUIStyles';
 
 /**
  * Button to delete a campaign with confirmation dialog.
  * @param {{ campaignId: string, onDeleted?: () => void }} props
  */
-export default function DeleteCampaignButton({ campaignId, onDeleted = () => {} }) {
+export default function DeleteCampaignButton({ campaignId, onDeleted = () => {}, buttonSx = {} }) {
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState('');
   const [error, setError] = useState('');
@@ -55,7 +55,7 @@ export default function DeleteCampaignButton({ campaignId, onDeleted = () => {} 
 
   return (
     <>
-      <Button sx={BtnStyleCancel} onClick={handleOpen}>
+      <Button sx={{ ...BtnStyleCancel, ...buttonSx }} onClick={handleOpen}>
         Delete
       </Button>
       <Dialog open={open} onClose={handleClose}>
